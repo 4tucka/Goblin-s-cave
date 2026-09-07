@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Room — Goblin's Cave</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main style="max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 3rem;">
+
+  <!-- ============ code entry ============ -->
+  <section class="panel" id="pane-code">
+    <h1>🚪 Join a Room</h1>
+    <p class="dim">Paste a 5-letter room code or a full invite link sent by your Dungeon Master.</p>
+    <form class="row" id="code-form">
+      <input type="text" id="code-input" placeholder="e.g. KRAZ7 or paste invite link"
+             style="max-width:340px;text-transform:uppercase;">
+      <button class="btn btn-primary" type="submit">Descend</button>
+    </form>
+    <div id="code-error" class="hidden mt1"><span class="badge red">No such room</span>
+      <span class="dim">Check the code, or the DM may have closed the room.</span></div>
+
+    <h3 class="mt3">Lobby etiquette</h3>
+    <p class="dim mt0">Pick your character, chat with the party, and flip your <b>Ready</b> toggle.
+    The session starts when the DM launches it. Guests play instantly; signed-in players can pull
+    characters straight from <b>My Vault</b>.</p>
+  </section>
+
+  <!-- ============ password gate ============ -->
+  <section class="panel hidden" id="pane-pass">
+    <h2>🔐 <span id="pass-room-name"></span></h2>
+    <p class="dim">This lair is sealed with a password.</p>
+    <form class="row" id="pass-form">
+      <input type="password" id="pass-input" placeholder="Password…" style="max-width:280px;">
+      <button class="btn btn-primary" type="submit">Unlock</button>
+    </form>
+    <div id="pass-error" class="hidden mt1"><span class="badge red">Wrong password.</span></div>
+  </section>
+
+  <!-- ============ room overview + character pick ============ -->
+  <section class="panel hidden" id="pane-char">
+    <div class="row between">
+      <h2 class="mt0">🏰 <span id="room-name"></span></h2>
+      <span class="badge gold" id="room-code-badge"></span>
+    </div>
+    <p class="dim mt0">Hosted by <b id="room-host"></b> · <span id="room-count"></span> players ·
+      <span class="badge dim" id="room-state-badge">lobby</span></p>
+
+    <div id="vault-section" class="hidden">
+      <h3>Choose from My Vault</h3>
+      <div class="grid cols-3" id="vault-choices"></div>
+      <p class="dim">…or bring someone new:</p>
+    </div>
+
+    <h3>Character card</h3>
+    <div class="grid cols-2">
+      <div>
+        <div class="inline-grid">
+          <label class="field"><span>Character name</span><input type="text" id="ch-name" placeholder="Brannoc the Bold"></label>
+          <label class="field"><span>Class</span>
+            <select id="ch-cls">
+              <option>Fighter</option><option>Wizard</option><option>Rogue</option><option>Cleric</option>
+              <option>Ranger</option><option>Barbarian</option><option>Bard</option><option>Paladin</option>
+              <option>Druid</option><option>Monk</option><option>Sorcerer</option><option>Warlock</option>
+            </select></label>
+          <label class="field"><span>Level</span><input type="number" id="ch-level" min="1" max="20" value="3"></label>
+          <label class="field"><span>Max HP</span><input type="number" id="ch-hp" min="1" value="24"></label>
+          <label class="field"><span>AC</span><input type="number" id="ch-ac" min="1" value="15"></label>
+          <label class="field"><span>Speed (ft)</span><input type="number" id="ch-speed" min="0" step="5" value="30"></label>
+        </div>
+        <label class="field"><span>Main attacks</span>
+          <textarea id="ch-atk" placeholder="Longbow +5 — 1d8+3 piercing"></textarea></label>
+      </div>
+      <div>
+        <span class="dim" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Token</span>
+        <div class="token-emoji-picker mt1" id="ch-emojis"></div>
+        <label class="field mt1"><span>…or upload a portrait</span>
+          <input type="file" id="ch-img" accept="image/*"></label>
+        <div id="ch-preview" style="width:64px;height:64px;font-size:2.4rem;display:grid;place-items:center;background:var(--stone-3);border-radius:50%;border:2px solid var(--line);overflow:hidden;">🧝</div>
+        <hr style="border-color:var(--line-soft);">
+        <label class="field"><span>Or upload a character sheet (JSON / PDF)</span>
+          <input type="file" id="ch-sheet" accept=".json,.pdf,application/json,application/pdf"></label>
+        <label class="checkline"><input type="checkbox" id="ch-save"> Save this character to My Vault
+          <span class="dim" id="ch-save-note"></span></label>
+      </div>
+    </div>
+    <div class="row mt2">
+      <button class="btn btn-primary btn-lg" id="enter-lobby">🕯️ Enter the Lobby</button>
+      <span class="dim" id="enter-hint"></span>
+    </div>
+  </section>
+
+  <!-- ============ lobby ============ -->
+  <section class="panel torch-lit hidden" id="pane-lobby">
+    <div class="row between">
+      <h2 class="mt0">🏰 <span id="lobby-room-name"></span> — Lobby</h2>
+      <button class="btn btn-sm btn-danger" id="leave-room">Leave room</button>
+    </div>
+    <p class="dim mt0">Waiting for the DM to start the session. Code:
+      <b class="gold" id="lobby-code"></b></p>
+    <div class="grid cols-2">
+      <div>
+        <h3>Party roster</h3>
+        <div id="lobby-roster"></div>
+        <div class="row mt1">
+          <button class="btn btn-green" id="ready-btn">✔ I'm Ready</button>
+          <span class="dim" id="ready-hint"></span>
+        </div>
+        <div class="panel mt2" id="my-char-summary"></div>
+      </div>
+      <div>
+        <h3>Party chat</h3>
+        <div class="chat-box" style="height:340px;">
+          <div class="chat-log" id="lobby-chat"></div>
+          <div class="chat-input-row">
+            <input type="text" id="lobby-chat-input" placeholder="Chat with the party…" maxlength="300">
+            <button class="btn btn-sm btn-primary" id="lobby-chat-send">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ gone ============ -->
+  <section class="panel hidden center" id="pane-gone">
+    <h2>🌑 The cave has collapsed</h2>
+    <p class="dim">This room was closed by its DM or expired.</p>
+    <a class="btn btn-primary" href="index.html">Back to the entrance</a>
+  </section>
+</main>
+
+<script src="js/core.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/mapcanvas.js"></script>
+<script src="js/embers.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/pages/join.js"></script>
+</body>
+</html>

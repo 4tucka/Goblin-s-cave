@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — Goblin's Cave</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main style="max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem;">
+
+  <!-- gate for guests/anon -->
+  <div id="gate" class="panel torch-lit center hidden">
+    <h2>🔒 The Vault is locked</h2>
+    <p class="dim">Only signed-in adventurers can open <b>My Vault</b>. Guests can play instantly,
+    but their characters and maps vanish when they leave the cave.</p>
+    <a class="btn btn-primary" href="index.html#auth">Log in / Sign up</a>
+  </div>
+
+  <div id="account" class="hidden">
+    <div class="grid" style="grid-template-columns: 300px 1fr; align-items:start;" id="profile-grid">
+      <!-- profile card -->
+      <div class="panel torch-lit">
+        <div class="center">
+          <div id="profile-avatar" style="font-size:4rem;line-height:1;filter:drop-shadow(0 0 16px rgba(255,154,60,.4));">🧙</div>
+          <h2 id="profile-name" class="mt1" style="margin-bottom:.1em;">Adventurer</h2>
+          <span class="badge gold">Adventurer</span>
+          <p class="dim mt1" style="font-size:.8rem;" id="profile-since"></p>
+        </div>
+        <hr style="border-color:var(--line-soft);">
+        <h3 class="mt0">Campaign Stats</h3>
+        <div class="stat-mini" style="flex-direction:column;gap:.4rem;">
+          <div>🕯️ Rooms hosted: <b id="stat-hosted">0</b></div>
+          <div>🚪 Sessions joined: <b id="stat-joined">0</b></div>
+          <div>🎲 Dice rolled: <b id="stat-dice">0</b></div>
+          <div>🗺️ Maps saved: <b id="stat-maps">0</b></div>
+        </div>
+        <hr style="border-color:var(--line-soft);">
+        <button class="btn btn-sm btn-ghost" id="change-avatar">Change avatar</button>
+        <button class="btn btn-sm btn-danger" id="logout">Log out</button>
+      </div>
+
+      <!-- right column -->
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- MY VAULT -->
+        <section class="panel" id="vault">
+          <div class="panel-title row between">
+            <h2 class="mt0">🎒 My Vault — Characters</h2>
+            <button class="btn btn-sm btn-primary" id="new-char">+ New Character</button>
+          </div>
+          <div class="grid cols-3" id="char-grid"></div>
+          <p class="dim hidden" id="no-chars">No characters yet. Forge one for your next delve!</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title row between">
+            <h2 class="mt0">🗺️ Saved Maps</h2>
+          </div>
+          <div class="grid cols-3" id="map-grid"></div>
+          <p class="dim hidden" id="no-maps">Save maps from the Map Builder to reuse them in future rooms.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title"><h2 class="mt0">🎵 Ambient Playlists</h2></div>
+          <p class="dim mt0">These loops are always at hand — attach them to any room in step 4.</p>
+          <div class="row" id="playlist"></div>
+        </section>
+
+        <!-- HISTORY -->
+        <section class="panel">
+          <div class="panel-title"><h2 class="mt0">📜 Room History</h2></div>
+          <div id="history-list"></div>
+          <p class="dim hidden" id="no-history">No campaigns recorded yet. Host or join a room to begin your legend.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/core.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/ambient.js"></script>
+<script src="js/embers.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/pages/account.js"></script>
+</body>
+</html>

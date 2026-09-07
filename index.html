@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goblin's Cave — D&D Virtual Tabletop &amp; Room Manager</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="hero-bg" style="background-image:url('assets/hero.jpg')"></div>
+    <div class="hero-inner">
+      <div class="tagline">A virtual tabletop for dungeon delvers</div>
+      <h1>Goblin&rsquo;s Cave</h1>
+      <p class="dim" style="max-width:560px;margin:0 auto;">
+        Step into the depths. Build your world on battlemaps wreathed in fog of war,
+        spawn your monsters, light the torches — and gather your party around the table.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" id="cta-create">🕯️ Create a Room</button>
+        <a class="btn btn-lg" href="join.html">🚪 Join a Room</a>
+        <button class="btn btn-lg btn-ghost" id="cta-auth">⚔️ Log in / Sign up</button>
+      </div>
+      <form class="row center mt2" id="quick-join" style="justify-content:center;">
+        <input type="text" id="quick-code" placeholder="Enter room code…" maxlength="5"
+               style="max-width:190px;text-transform:uppercase;letter-spacing:.2em;text-align:center;">
+        <button class="btn btn-primary" type="submit">Enter the Cave</button>
+      </form>
+    </div>
+  </section>
+
+  <div style="max-width:1100px;margin:0 auto;padding:0 1.25rem;">
+
+    <!-- ============ guest vs logged-in banner ============ -->
+    <section class="panel torch-lit mt3 mode-banner" aria-label="Guests versus accounts">
+      <div class="mode">
+        <h3>🎭 Play as a Guest — instantly</h3>
+        <p class="dim mt0">No account needed. Create or join a room right now, fill a quick character
+        card, and roll dice with your party. Everything lives for the length of your visit.</p>
+        <button class="btn btn-sm" id="banner-guest">Continue as guest</button>
+      </div>
+      <div class="mode">
+        <h3>🔑 Sign in — keep your hoard</h3>
+        <p class="dim mt0">Logged-in adventurers save custom characters in <b>My Vault</b>, keep a
+        map library and ambient playlists, track campaign stats, and revisit their
+        <b>Room History</b> any time.</p>
+        <button class="btn btn-sm btn-primary" id="banner-auth">Create free account</button>
+      </div>
+    </section>
+
+    <!-- ============ feature cards ============ -->
+    <h2 class="center mt3">Everything a DM needs, down to the last goblin</h2>
+    <div class="grid cols-3 mt2">
+      <div class="card">
+        <h3>🗺️ Map Builder</h3>
+        <p class="dim">Square or hex grids, paintable terrain, fog of war, token placement and
+        object scaling — over uploaded maps or hand-drawn templates.</p>
+      </div>
+      <div class="card">
+        <h3>👹 NPC &amp; Monster Spawner</h3>
+        <p class="dim">Build stat blocks with HP, AC and token icons, or import them as JSON.
+        The DM drives every monster on the initiative bar.</p>
+      </div>
+      <div class="card">
+        <h3>🎲 Dice &amp; Chat</h3>
+        <p class="dim">A full dice tray (d4–d100) with <code>/roll 1d20+5</code> commands,
+        advantage/disadvantage, and a table chat for RP and OOC talk.</p>
+      </div>
+      <div class="card">
+        <h3>🔊 Atmosphere Engine</h3>
+        <p class="dim">Synthesized ambient loops — Dungeon Rain, Tavern Noise, Cave Drips —
+        plus your own MP3s or audio URLs, synced to the room by the DM.</p>
+      </div>
+      <div class="card">
+        <h3>⚔️ Live Sessions</h3>
+        <p class="dim">Real-time token movement, fog reveals, turn tracking and ready-up lobbies.
+        Open a second tab and watch the table sync.</p>
+      </div>
+      <div class="card">
+        <h3>👺 The Goblin Guide</h3>
+        <p class="dim">A floating companion who explains the site, answers D&amp;D 5e rules
+        questions, and conjures NPCs, encounters and loot on demand.</p>
+      </div>
+    </div>
+
+    <!-- ============ how it works ============ -->
+    <h2 class="center mt3">Your session in five steps</h2>
+    <div class="panel mt2">
+      <table class="table">
+        <tr><td style="width:42px;" class="gold">1.</td><td><b>Forge the room</b> — name it, set a password and player cap if you like.</td></tr>
+        <tr><td class="gold">2.</td><td><b>Build the map</b> — pick a template or upload your own; paint terrain and hide secrets in fog.</td></tr>
+        <tr><td class="gold">3.</td><td><b>Spawn the threats</b> — add NPCs and monsters with HP, AC and tokens.</td></tr>
+        <tr><td class="gold">4.</td><td><b>Set the mood</b> — attach an ambient track for the table.</td></tr>
+        <tr><td class="gold">5.</td><td><b>Post the room</b> — share the code, wait for the party to Ready up, then <i>Start Game Session</i>.</td></tr>
+      </table>
+    </div>
+
+    <!-- ============ auth section ============ -->
+    <section class="panel torch-lit mt3" id="auth">
+      <div class="panel-title"><h2>⚔️ Adventurer&rsquo;s Gate</h2></div>
+      <div class="grid cols-2">
+        <div>
+          <h3>Log in</h3>
+          <form id="login-form">
+            <label class="field"><span>Adventurer name</span>
+              <input type="text" id="login-user" autocomplete="username" required></label>
+            <label class="field"><span>Password</span>
+              <input type="password" id="login-pass" autocomplete="current-password" required></label>
+            <button class="btn btn-primary btn-block" type="submit">Enter the Cave</button>
+          </form>
+        </div>
+        <div>
+          <h3>Sign up</h3>
+          <form id="signup-form">
+            <label class="field"><span>Choose a name</span>
+              <input type="text" id="signup-user" autocomplete="username" required></label>
+            <label class="field"><span>Choose a password</span>
+              <input type="password" id="signup-pass" autocomplete="new-password" required></label>
+            <button class="btn btn-green btn-block" type="submit">Forge my Account</button>
+            <p class="dim mt1" style="font-size:.78rem;">Accounts live in your browser only (demo storage).
+            Guests can <a href="#" id="guest-link">continue without an account →</a></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="js/core.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/embers.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/pages/landing.js"></script>
+</body>
+</html>
