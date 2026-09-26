@@ -208,6 +208,7 @@ $('#enter-lobby').addEventListener('click', () => {
   }
   Store.saveRoom(room);
   Auth.bumpStat('roomsJoined');
+  Store.upsertHistory({ code, name: room.name, date: Date.now(), hostName: room.hostName, role: 'joined', viewer: u.name, players: [u.name], state: room.state });
   if (room.state === 'live') { location.href = 'play.html?room=' + code; return; }
   enterLobby();
 });

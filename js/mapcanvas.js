@@ -1,17 +1,5 @@
 /* mapcanvas.js — shared grid math + interactive map canvas for builder & VTT */
 
-const TOKEN_EMOJIS = ['🧝','🧙','🧔','👸','🥷','🧑‍🌾','🦹','🧛','🐺','👺','👹','🐉','🦂','🕷️','🐍','🦇','💀','👻','🗿','🌳','🐗','🦎','🐲','🛡️'];
-const AVATARS = ['🧙','⚔️','🛡️','🏹','🗡️','🐉','🦉','🐺','🔥','👺','🧝','🧛','💀','🎲','🕯️','🌙','🍄','🪓'];
-const TERRAIN_SWATCHES = [
-  { name: 'Water',   c: 'rgba(46,109,246,.55)' },
-  { name: 'Forest',  c: 'rgba(52,128,60,.6)' },
-  { name: 'Rubble',  c: 'rgba(140,130,115,.55)' },
-  { name: 'Lava',    c: 'rgba(255,94,26,.55)' },
-  { name: 'Sand',    c: 'rgba(214,183,110,.5)' },
-  { name: 'Ice',     c: 'rgba(160,220,240,.5)' },
-  { name: 'Swamp',   c: 'rgba(88,100,45,.6)' },
-  { name: 'Wall',    c: 'rgba(40,36,32,.85)' },
-];
 
 /* ---------------- grid math ---------------- */
 const Grid = {

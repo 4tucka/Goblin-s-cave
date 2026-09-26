@@ -58,7 +58,8 @@ $$('[data-next]').forEach(b => b.addEventListener('click', () => {
   if (currentStep === 1) {
     draft.name = $('#r-name').value.trim();
     if (!draft.name) return toast('Give your lair a name first!', 'err');
-    draft.password = $('#r-pass').value.trim();
+    draft.password = $('#r-access').value === 'password' ? $('#r-pass').value.trim() : '';
+    if ($('#r-access').value === 'password' && !draft.password) return toast('Set a password, or switch the room to Open.', 'err');
     draft.maxPlayers = clamp(parseInt($('#r-max').value) || 6, 1, 12);
   }
   goStep(+b.dataset.next);
@@ -66,6 +67,15 @@ $$('[data-next]').forEach(b => b.addEventListener('click', () => {
 $$('[data-prev]').forEach(b => b.addEventListener('click', () => goStep(+b.dataset.prev)));
 
 $('#r-name').value = pick(['The Sunken Temple', "Wyrmscar Hollow", 'The Dripping Dark', 'Redfang Warrens', 'Tomb of the Lantern King']) + '';
+
+/* access rule <-> password wiring */
+function syncAccess() {
+  const open = $('#r-access').value === 'open';
+  $('#r-pass').disabled = open;
+  if (open) { $('#r-pass').value = ''; }
+}
+$('#r-access').addEventListener('change', syncAccess);
+syncAccess();
 
 /* ============================================================
    STEP 2 — Map Builder
@@ -422,7 +432,7 @@ $('#post-room').addEventListener('click', () => {
   Store.saveRoom(room);
   roomPosted = code;
   Auth.bumpStat('roomsHosted');
-  Store.pushHistory({ code, name: room.name, date: Date.now(), hostName: cu.name, role: 'host', players: [], state: 'lobby' });
+  Store.upsertHistory({ code, name: room.name, date: Date.now(), hostName: cu.name, role: 'host', viewer: cu.name, players: [], state: 'lobby' });
   enterLobbyView();
   toast('📯 Room posted! Share the code with your party.', 'ok');
 });

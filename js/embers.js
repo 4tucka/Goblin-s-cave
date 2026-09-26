@@ -17,7 +17,7 @@ const Embers = (() => {
         vy: 0.25 + Math.random() * 0.75,
         vx: (Math.random() - 0.5) * 0.35,
         life: 0.6 + Math.random() * 0.4,
-        hue: 18 + Math.random() * 28,
+        hue: (352 + Math.random() * 22) % 360,
         wob: Math.random() * Math.PI * 2,
       };
     }

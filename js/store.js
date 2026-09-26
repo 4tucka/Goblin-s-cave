@@ -13,7 +13,13 @@ const Store = (() => {
     try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
     catch { return fallback; }
   }
-  function set(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+  function set(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch {
+      if (window.toast) toast('⚠️ Browser storage is full — that change could not be saved. Try a smaller image or delete old maps/rooms.', 'err', 5200);
+      return false;
+    }
+  }
 
   /* ---- users ---- */
   const users = () => get(K.users, {});
@@ -70,6 +76,13 @@ const Store = (() => {
     all.unshift(entry);
     set(K.history, all.slice(0, 60));
   }
+  /* replace any entry with the same room code + viewer, else prepend */
+  function upsertHistory(entry) {
+    const all = history();
+    const i = all.findIndex(h => h.code === entry.code && h.viewer === entry.viewer);
+    if (i >= 0) all[i] = entry; else all.unshift(entry);
+    set(K.history, all.slice(0, 60));
+  }
   const historyFor = name => history().filter(h =>
     h.hostName === name || (h.players || []).some(p => p === name));
 
@@ -82,5 +95,5 @@ const Store = (() => {
   }
 
   return { K, get, set, users, saveUser, findUser, chars, charsFor, saveChar, deleteChar, getChar,
-    maps, saveMap, deleteMap, rooms, getRoom, saveRoom, deleteRoom, history, pushHistory, historyFor, newRoomCode };
+    maps, saveMap, deleteMap, rooms, getRoom, saveRoom, deleteRoom, history, pushHistory, upsertHistory, historyFor, newRoomCode };
 })();

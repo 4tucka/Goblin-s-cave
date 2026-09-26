@@ -387,8 +387,8 @@ function boot() {
   $('#btn-end').addEventListener('click', () => {
     if (!confirm('End the session for everyone?')) return;
     room.state = 'ended';
-    Store.pushHistory({
-      code, name: room.name, date: Date.now(), hostName: room.hostName, role: 'host',
+    Store.upsertHistory({
+      code, name: room.name, date: Date.now(), hostName: room.hostName, role: 'host', viewer: room.hostName,
       players: room.players.map(p => p.name), state: 'ended',
     });
     saveRoom();
