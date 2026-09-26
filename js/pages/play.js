@@ -194,11 +194,20 @@ function boot() {
     $('#turn-hint').textContent = cur ? `▶ ${cur.name}'s turn` : '';
   }
 
+  const amBtn = $('#aimaster-toggle');
+  const amSync = () => amBtn.classList.toggle('active', I18n.aiMasterOn());
+  amSync();
+  amBtn.addEventListener('click', () => { I18n.setAiMaster(!I18n.aiMasterOn()); amSync(); });
+
   $('#btn-next-turn').addEventListener('click', () => {
     if (!room.initiative.length) return;
     room.turnIdx = ((room.turnIdx || 0) + 1) % room.initiative.length;
     const t = currentTurnToken();
     sysChat(`▶ ${t ? t.name : 'Next'}'s turn!`);
+    if (I18n.aiMasterOn()) {
+      room.chat.push({ id: uid(), who: '🎭 AI Master',
+        text: I18n.narrate(room.lang || I18n.getLang(), t ? t.name : 'the party'), type: 'msg', ts: Date.now() });
+    }
     saveRoom(); renderAll();
   });
   $('#btn-prev-turn').addEventListener('click', () => {

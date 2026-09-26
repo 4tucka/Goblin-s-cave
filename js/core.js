@@ -122,22 +122,28 @@ function renderHeader(active = '') {
   header.innerHTML = `
     <a class="brand" href="index.html"><span class="flame">🔥</span> Goblin&rsquo;s Cave</a>
     <nav class="nav-links">
-      <a href="index.html" data-nav="home">Home</a>
-      <a href="create.html" data-nav="create">Create Room</a>
-      <a href="join.html" data-nav="join">Join Room</a>
-      ${u && !u.guest ? '<a href="account.html" data-nav="account">My Account</a>' : ''}
+      <a href="index.html" data-nav="home" data-i18n="nav_home">Home</a>
+      <a href="create.html" data-nav="create" data-i18n="nav_create">Create Room</a>
+      <a href="join.html" data-nav="join" data-i18n="nav_join">Join Room</a>
+      ${u && !u.guest ? '<a href="account.html" data-nav="account" data-i18n="nav_account">My Account</a>' : ''}
     </nav>
     <div class="spacer"></div>
+    <select id="lang-sel" style="width:auto;font-size:.82rem;" title="Language / Idioma / Língua / Langue / Sprache">
+      ${Object.entries(I18n.LANGS).map(([k, v]) => `<option value="${k}" ${I18n.getLang() === k ? 'selected' : ''}>${v}</option>`).join('')}
+    </select>
     ${u ? `
       <div class="user-chip" id="user-chip" title="${u.guest ? 'Playing as guest' : 'Account'}">
         <div class="avatar">${u.avatarImg ? `<img src="${u.avatarImg}">` : (u.avatar || '👤')}</div>
         <span>${escapeHtml(u.name || u.username)}</span>
         ${u.guest ? '<span class="badge dim">Guest</span>' : ''}
       </div>` : `
-      <a class="btn btn-sm" href="index.html#auth">Log in</a>
-      <a class="btn btn-sm btn-primary" href="index.html#auth">Sign up</a>`}
+      <a class="btn btn-sm" href="index.html#auth" data-i18n="hdr_login">Log in</a>
+      <a class="btn btn-sm btn-primary" href="index.html#auth" data-i18n="hdr_signup">Sign up</a>`}
   `;
   document.body.prepend(header);
+  const langSel = $('#lang-sel', header);
+  if (langSel) langSel.addEventListener('change', e => I18n.setLang(e.target.value));
+  I18n.apply(header);
   const link = $(`[data-nav="${active}"]`, header);
   if (link) link.classList.add('active');
   const chip = $('#user-chip', header);
@@ -161,4 +167,5 @@ function initChrome(active) {
   em.id = 'embers-canvas';
   document.body.prepend(em);
   Embers.init(em);
+  I18n.apply(document);
 }

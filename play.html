@@ -31,8 +31,8 @@
     <span class="dim" id="sess-players"></span>
     <div class="spacer"></div>
     <span class="dim" id="sess-role"></span>
-    <button class="btn btn-sm" id="btn-open-join" title="Invite link">🔗 Invite</button>
-    <button class="btn btn-sm btn-danger hidden" id="btn-end">End Session</button>
+    <button class="btn btn-sm" id="btn-open-join" title="Invite link" data-i18n="p_invite">🔗 Invite</button>
+    <button class="btn btn-sm btn-danger hidden" id="btn-end" data-i18n="p_end">End Session</button>
   </div>
 
   <!-- initiative bar -->
@@ -41,8 +41,8 @@
       <span class="dim" style="font-size:.8rem;padding:0 .4rem;">Initiative:</span>
       <div id="init-cards" class="row" style="gap:.5rem;flex:1;overflow-x:auto;"></div>
       <button class="btn btn-sm hidden" id="btn-prev-turn">◀</button>
-      <button class="btn btn-sm hidden" id="btn-next-turn">Next Turn ▶</button>
-      <button class="btn btn-sm hidden" id="btn-init-edit">🎲 Set Initiative</button>
+      <button class="btn btn-sm hidden" id="btn-next-turn" data-i18n="p_next">Next Turn ▶</button>
+      <button class="btn btn-sm hidden" id="btn-init-edit" data-i18n="p_setinit">🎲 Set Initiative</button>
     </div>
   </div>
 
@@ -50,14 +50,15 @@
     <!-- ===== left: map ===== -->
     <div class="vtt-main">
       <div class="tool-bar">
-        <button class="tool-btn active" data-tool="move" title="Drag your token on your turn">✋ Move / Pan</button>
+        <button class="tool-btn active" data-tool="move" title="Drag your token on your turn" data-i18n="p_move">✋ Move / Pan</button>
         <span class="tool-sep dm-only hidden"></span>
-        <button class="tool-btn dm-only hidden" data-tool="fog">🌫️ Fog brush</button>
-        <button class="tool-btn dm-only hidden" data-tool="unfog">☀️ Reveal</button>
+        <button class="tool-btn dm-only hidden" data-tool="fog" data-i18n="p_fog">🌫️ Fog brush</button>
+        <button class="tool-btn dm-only hidden" data-tool="unfog" data-i18n="p_reveal">☀️ Reveal</button>
         <span class="tool-sep"></span>
         <button class="tool-btn" id="v-zoom-in">＋</button>
         <button class="tool-btn" id="v-zoom-out">－</button>
         <button class="tool-btn" id="v-fit">⤢ Fit</button>
+        <button class="tool-btn" id="aimaster-toggle" title="AI Master narrates turns in the room language">🎭 AI Master</button>
         <span class="dim" style="font-size:.78rem;" id="turn-hint"></span>
       </div>
       <div class="canvas-frame" style="flex:1;min-height:420px;display:flex;flex-direction:column;">
@@ -87,10 +88,10 @@
     <div class="vtt-side">
       <div class="panel">
         <div class="side-tabs">
-          <button class="tool-btn active" data-tab="chat">💬 Chat</button>
-          <button class="tool-btn" data-tab="dice">🎲 Dice</button>
-          <button class="tool-btn" data-tab="party">👥 Party</button>
-          <button class="tool-btn" data-tab="audio">🔊 Audio</button>
+          <button class="tool-btn active" data-tab="chat" data-i18n="p_chat">💬 Chat</button>
+          <button class="tool-btn" data-tab="dice" data-i18n="p_dice">🎲 Dice</button>
+          <button class="tool-btn" data-tab="party" data-i18n="p_party">👥 Party</button>
+          <button class="tool-btn" data-tab="audio" data-i18n="p_audio">🔊 Audio</button>
         </div>
 
         <div data-pane="chat" class="chat-box" style="flex:1;">
@@ -118,13 +119,13 @@
         </div>
 
         <div data-pane="audio" class="hidden" style="flex:1;">
-          <h3 class="mt0">Room ambience</h3>
+          <h3 class="mt0" data-i18n="p_amb_h">Room ambience</h3>
           <p class="dim" id="audio-track">—</p>
           <div class="row">
-            <button class="btn btn-sm btn-primary" id="audio-play">▶ Play</button>
-            <button class="btn btn-sm" id="audio-stop">⏹ Stop</button>
+            <button class="btn btn-sm btn-primary" id="audio-play" data-i18n="p_play">▶ Play</button>
+            <button class="btn btn-sm" id="audio-stop" data-i18n="p_stop">⏹ Stop</button>
           </div>
-          <label class="field mt1"><span>Volume</span>
+          <label class="field mt1"><span data-i18n="p_vol">Volume</span>
             <input type="range" id="audio-vol" min="0" max="1" step="0.05" value="0.4"></label>
           <p class="dim" style="font-size:.78rem;">The DM chose this track for the room. Each adventurer
           controls their own volume.</p>
@@ -143,6 +144,7 @@
   </div>
 </div>
 
+<script src="js/i18n.js"></script>
 <script src="js/core.js"></script>
 <script src="js/realtime.js"></script>
 <script src="js/store.js"></script>

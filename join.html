@@ -13,18 +13,18 @@
 
   <!-- ============ code entry ============ -->
   <section class="panel" id="pane-code">
-    <h1>🚪 Join a Room</h1>
-    <p class="dim">Paste a 5-letter room code or a full invite link sent by your Dungeon Master.</p>
+    <h1 data-i18n="j_t">🚪 Join a Room</h1>
+    <p class="dim" data-i18n="j_sub">Paste a 5-letter room code or a full invite link sent by your Dungeon Master.</p>
     <form class="row" id="code-form">
       <input type="text" id="code-input" placeholder="e.g. KRAZ7 or paste invite link"
              style="max-width:340px;text-transform:uppercase;">
-      <button class="btn btn-primary" type="submit">Descend</button>
+      <button class="btn btn-primary" type="submit" data-i18n="j_btn">Descend</button>
     </form>
     <div id="code-error" class="hidden mt1"><span class="badge red">No such room</span>
       <span class="dim">Check the code, or the DM may have closed the room.</span></div>
 
-    <h3 class="mt3">Lobby etiquette</h3>
-    <p class="dim mt0">Pick your character, chat with the party, and flip your <b>Ready</b> toggle.
+    <h3 class="mt3" data-i18n="j_etiq_h">Lobby etiquette</h3>
+    <p class="dim mt0" data-i18n="j_etiq_p">Pick your character, chat with the party, and flip your <b>Ready</b> toggle.
     The session starts when the DM launches it. Guests play instantly; signed-in players can pull
     characters straight from <b>My Vault</b>.</p>
   </section>
@@ -55,7 +55,7 @@
       <p class="dim">…or bring someone new:</p>
     </div>
 
-    <h3>Character card</h3>
+    <h3 data-i18n="j_char">Character card</h3>
     <div class="grid cols-2">
       <div>
         <div class="inline-grid">
@@ -90,7 +90,7 @@
       </div>
     </div>
     <div class="row mt2">
-      <button class="btn btn-primary btn-lg" id="enter-lobby">🕯️ Enter the Lobby</button>
+      <button class="btn btn-primary btn-lg" id="enter-lobby" data-i18n="j_enter">🕯️ Enter the Lobby</button>
       <span class="dim" id="enter-hint"></span>
     </div>
   </section>
@@ -99,13 +99,13 @@
   <section class="panel torch-lit hidden" id="pane-lobby">
     <div class="row between">
       <h2 class="mt0">🏰 <span id="lobby-room-name"></span> — Lobby</h2>
-      <button class="btn btn-sm btn-danger" id="leave-room">Leave room</button>
+      <button class="btn btn-sm btn-danger" id="leave-room" data-i18n="j_leave">Leave room</button>
     </div>
     <p class="dim mt0">Waiting for the DM to start the session. Code:
       <b class="gold" id="lobby-code"></b></p>
     <div class="grid cols-2">
       <div>
-        <h3>Party roster</h3>
+        <h3 data-i18n="j_roster">Party roster</h3>
         <div id="lobby-roster"></div>
         <div class="row mt1">
           <button class="btn btn-green" id="ready-btn">✔ I'm Ready</button>
@@ -114,11 +114,11 @@
         <div class="panel mt2" id="my-char-summary"></div>
       </div>
       <div>
-        <h3>Party chat</h3>
+        <h3 data-i18n="j_chat">Party chat</h3>
         <div class="chat-box" style="height:340px;">
           <div class="chat-log" id="lobby-chat"></div>
           <div class="chat-input-row">
-            <input type="text" id="lobby-chat-input" placeholder="Chat with the party…" maxlength="300">
+            <input type="text" id="lobby-chat-input" data-i18n-ph="g_ph" placeholder="Chat with the party…" maxlength="300">
             <button class="btn btn-sm btn-primary" id="lobby-chat-send">Send</button>
           </div>
         </div>
@@ -134,6 +134,7 @@
   </section>
 </main>
 
+<script src="js/i18n.js"></script>
 <script src="js/core.js"></script>
 <script src="js/realtime.js"></script>
 <script src="js/store.js"></script>

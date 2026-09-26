@@ -268,16 +268,24 @@ I know my way around the cave and the rules of the game. Try:
     panel.innerHTML = `
       <header>
         <span class="face">👺</span>
-        <div><b>The Goblin Guide</b><small>site help • 5e rules • DM generators</small></div>
+        <div><b>The Goblin Guide</b><small id="guide-sub">site help • 5e rules • DM generators</small></div>
         <div class="spacer"></div>
         <button class="modal-x" id="guide-close">✕</button>
       </header>
       <div id="guide-log"></div>
       <div id="guide-chips"></div>
+      <div id="guide-chips2" style="display:flex;gap:.35rem;padding:.3rem .7rem 0;"></div>
       <div id="guide-input-row">
         <input id="guide-input" placeholder="Ask the goblin…" autocomplete="off">
         <button id="guide-send">➤</button>
       </div>`;
+    const relabel = () => {
+      const sub = $('#guide-sub'); if (sub) sub.textContent = I18n.t('g_sub');
+      const inp = $('#guide-input'); if (inp) inp.placeholder = I18n.t('g_ph');
+      const am = $('#am-toggle');
+      if (am) am.classList.toggle('active', I18n.aiMasterOn());
+    };
+    Bus.on('lang', relabel);
     document.body.appendChild(panel);
 
     const log = $('#guide-log');
@@ -306,12 +314,41 @@ I know my way around the cave and the rules of the game. Try:
       chips.appendChild(b);
     });
 
+    /* AI Master row */
+    const chips2 = $('#guide-chips2');
+    const amT = document.createElement('span');
+    amT.className = 'chip'; amT.id = 'am-toggle';
+    amT.textContent = '🎭 AI Master';
+    amT.title = 'Narrator persona: speaks the room language and narrates turns in-session';
+    amT.classList.toggle('active', I18n.aiMasterOn());
+    amT.addEventListener('click', () => {
+      I18n.setAiMaster(!I18n.aiMasterOn());
+      amT.classList.toggle('active', I18n.aiMasterOn());
+      addMsg(I18n.aiMasterOn()
+        ? '🎭 <b>AI Master awakens.</b> I will narrate the session in the chosen language.'
+        : 'The AI Master folds back into the shadows.', 'bot');
+    });
+    chips2.appendChild(amT);
+    const amN = document.createElement('span');
+    amN.className = 'chip'; amN.textContent = '🎭 Narrate the scene';
+    amN.addEventListener('click', () => addMsg('🎭 ' + I18n.narrate(I18n.getLang(), 'the party'), 'bot'));
+    chips2.appendChild(amN);
+
     function send(text) {
       text = (text ?? '').trim();
       if (!text) return;
       addMsg(escapeHtml(text), 'user');
       $('#guide-input').value = '';
-      setTimeout(() => addMsg(answer(text), 'bot'), 260);
+      setTimeout(() => {
+        const raw = answer(text);
+        const lang = I18n.getLang();
+        if (lang === 'en') return addMsg(raw, 'bot');
+        const node = addMsg('<i>…</i>', 'bot');
+        I18n.MT.translate(I18n.MT.strip(raw), lang).then(tr => {
+          node.innerHTML = tr ? escapeHtml(tr) : raw;
+          log.scrollTop = log.scrollHeight;
+        });
+      }, 260);
     }
     $('#guide-send').addEventListener('click', () => send($('#guide-input').value));
     $('#guide-input').addEventListener('keydown', e => { if (e.key === 'Enter') send(e.target.value); });

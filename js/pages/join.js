@@ -263,7 +263,7 @@ function renderLobby() {
   const me = room.players.find(p => p.id === myPlayerId);
   myReady = me ? me.ready : false;
   const btn = $('#ready-btn');
-  btn.textContent = myReady ? '❌ Un-ready' : "✔ I'm Ready";
+  btn.textContent = myReady ? I18n.t('j_unready') : I18n.t('j_ready');
   btn.className = 'btn ' + (myReady ? 'btn-danger' : 'btn-green');
   $('#ready-hint').textContent = myReady ? 'The DM can see you are ready.' : '';
 

@@ -276,6 +276,7 @@ $('#post-room').addEventListener('click', () => {
     password: draft.password || '',
     maxPlayers: draft.maxPlayers,
     hostId: cu.id, hostName: cu.name,
+    lang: I18n.getLang(),
     state: 'lobby',
     createdAt: Date.now(),
     map: { ...draft.map },
@@ -342,6 +343,9 @@ $('#start-session').addEventListener('click', () => {
   if (!room) return;
   room.state = 'live';
   room.chat.push({ id: uid(), who: 'DM', text: 'The session begins — roll for initiative!', type: 'sys', ts: Date.now() });
+  if (I18n.aiMasterOn()) {
+    room.chat.push({ id: uid(), who: '🎭 AI Master', text: I18n.narrate(room.lang || I18n.getLang(), 'the party'), type: 'msg', ts: Date.now() });
+  }
   Store.saveRoom(room);
   location.href = 'play.html?room=' + room.code;
 });

@@ -30,7 +30,7 @@
           <p class="dim mt1" style="font-size:.8rem;" id="profile-since"></p>
         </div>
         <hr style="border-color:var(--line-soft);">
-        <h3 class="mt0">Campaign Stats</h3>
+        <h3 class="mt0" data-i18n="a_stats">Campaign Stats</h3>
         <div class="stat-mini" style="flex-direction:column;gap:.4rem;">
           <div>🕯️ Rooms hosted: <b id="stat-hosted">0</b></div>
           <div>🚪 Sessions joined: <b id="stat-joined">0</b></div>
@@ -39,7 +39,7 @@
         </div>
         <hr style="border-color:var(--line-soft);">
         <button class="btn btn-sm btn-ghost" id="change-avatar">Change avatar</button>
-        <button class="btn btn-sm btn-danger" id="logout">Log out</button>
+        <button class="btn btn-sm btn-danger" id="logout" data-i18n="a_logout">Log out</button>
       </div>
 
       <!-- right column -->
@@ -47,8 +47,8 @@
         <!-- MY VAULT -->
         <section class="panel" id="vault">
           <div class="panel-title row between">
-            <h2 class="mt0">🎒 My Vault — Characters</h2>
-            <a class="btn btn-sm btn-primary" href="char-editor.html">⚒️ New / Import Character</a>
+            <h2 class="mt0" data-i18n="a_vault">🎒 My Vault — Characters</h2>
+            <a class="btn btn-sm btn-primary" href="char-editor.html" data-i18n="a_newchar">⚒️ New / Import Character</a>
           </div>
           <div class="grid cols-3" id="char-grid"></div>
           <p class="dim hidden" id="no-chars">No characters yet. Forge one for your next delve!</p>
@@ -56,7 +56,7 @@
 
         <section class="panel">
           <div class="panel-title row between">
-            <h2 class="mt0">🗺️ Saved Maps</h2>
+            <h2 class="mt0" data-i18n="a_maps">🗺️ Saved Maps</h2>
             <a class="btn btn-sm" href="map-editor.html">🧰 New / Edit Map</a>
           </div>
           <div class="grid cols-3" id="map-grid"></div>
@@ -64,14 +64,14 @@
         </section>
 
         <section class="panel">
-          <div class="panel-title"><h2 class="mt0">🎵 Ambient Playlists</h2></div>
+          <div class="panel-title"><h2 class="mt0" data-i18n="a_play">🎵 Ambient Playlists</h2></div>
           <p class="dim mt0">These loops are always at hand — attach them to any room in step 4.</p>
           <div class="row" id="playlist"></div>
         </section>
 
         <!-- HISTORY -->
         <section class="panel">
-          <div class="panel-title"><h2 class="mt0">📜 Room History</h2></div>
+          <div class="panel-title"><h2 class="mt0" data-i18n="a_hist">📜 Room History</h2></div>
           <div id="history-list"></div>
           <p class="dim hidden" id="no-history">No campaigns recorded yet. Host or join a room to begin your legend.</p>
         </section>
@@ -80,6 +80,7 @@
   </div>
 </main>
 
+<script src="js/i18n.js"></script>
 <script src="js/core.js"></script>
 <script src="js/realtime.js"></script>
 <script src="js/store.js"></script>
