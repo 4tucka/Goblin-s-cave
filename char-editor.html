@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Forge — Goblin's Cave</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main style="max-width:1200px;margin:0 auto;padding:1.25rem 1.25rem 3rem;">
+  <div class="row between">
+    <h1 class="mt0">⚒️ Character Forge</h1>
+    <div class="row">
+      <a class="btn" id="ce-back" href="account.html">← Back</a>
+      <button class="btn btn-primary" id="ce-save">💾 Save Character</button>
+    </div>
+  </div>
+
+  <!-- ============ import from the web ============ -->
+  <section class="panel torch-lit" id="ce-import">
+    <div class="panel-title"><h3 class="mt0">🌐 Import from another site</h3></div>
+    <p class="dim mt0">Bring a hero from <b>D&amp;D Beyond</b>, <b>5e.tools</b>, <b>fastcharacter.com</b>,
+    <b>Long Story Short</b> or any other builder: paste a link to its JSON export, or upload the exported
+    JSON file. The forge auto-detects the format.</p>
+    <div class="row">
+      <input type="url" id="ce-url" placeholder="https://…/character-export.json" style="max-width:420px;">
+      <button class="btn btn-sm" id="ce-url-go">⬇️ Fetch &amp; import</button>
+      <label class="btn btn-sm" style="cursor:pointer;">⬆️ Upload JSON
+        <input type="file" id="ce-file" accept=".json,application/json" style="display:none;"></label>
+      <span class="dim" style="font-size:.78rem;" id="ce-import-status"></span>
+    </div>
+  </section>
+
+  <div class="grid cols-2 mt2">
+    <!-- ============ LEFT ============ -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+      <section class="panel">
+        <h3 class="mt0">Identity</h3>
+        <div class="inline-grid">
+          <label class="field"><span>Name</span><input type="text" id="ce-name" placeholder="Brannoc the Bold"></label>
+          <label class="field"><span>Race</span><input type="text" id="ce-race" placeholder="Human"></label>
+          <label class="field"><span>Class</span><select id="ce-cls"></select></label>
+          <label class="field"><span>Level</span><input type="number" id="ce-level" min="1" max="20" value="1"></label>
+          <label class="field"><span>Background</span><input type="text" id="ce-bg" placeholder="Soldier"></label>
+          <label class="field"><span>Alignment</span>
+            <select id="ce-align">
+              <option value="">—</option><option>LG</option><option>NG</option><option>CG</option>
+              <option>LN</option><option>TN</option><option>CN</option><option>LE</option><option>NE</option><option>CE</option>
+            </select></label>
+        </div>
+        <div class="row">
+          <div>
+            <span class="dim" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Token</span>
+            <div class="token-emoji-picker mt1" id="ce-emojis"></div>
+          </div>
+          <div style="max-width:150px;">
+            <div id="ce-portrait" style="width:70px;height:70px;font-size:2.6rem;display:grid;place-items:center;background:var(--stone-3);border-radius:50%;border:2px solid var(--line);margin:0 auto;overflow:hidden;">🧝</div>
+            <input type="file" id="ce-img" accept="image/*" class="mt1" style="width:130px;font-size:.72rem;">
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="row between"><h3 class="mt0">Ability Scores</h3>
+          <div class="row">
+            <button class="btn btn-sm" id="ce-roll">🎲 Roll 4d6kh3</button>
+            <button class="btn btn-sm" id="ce-standard">27-point standard</button>
+          </div>
+        </div>
+        <div id="ce-abilities" class="grid" style="grid-template-columns:repeat(6,1fr);gap:.5rem;"></div>
+        <div class="stat-mini mt2">
+          <span>Proficiency bonus: <b id="ce-pb">+2</b></span>
+          <span>Passive Perception: <b id="ce-passive">10</b></span>
+          <span>Suggested AC (10+DEX): <b id="ce-acdex">10</b></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3 class="mt0">Saving Throws</h3>
+        <div class="row" id="ce-saves"></div>
+        <h3 class="mt2">Skills (proficiency / expertise)</h3>
+        <div id="ce-skills" class="grid" style="grid-template-columns:repeat(3,1fr);gap:.3rem .8rem;font-size:.85rem;"></div>
+      </section>
+    </div>
+
+    <!-- ============ RIGHT ============ -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+      <section class="panel">
+        <h3 class="mt0">Combat</h3>
+        <div class="inline-grid">
+          <label class="field"><span>Max HP
+            <label class="checkline" style="display:inline-flex;margin:0 0 0 .5rem;"><input type="checkbox" id="ce-hp-auto"> auto</label></span>
+            <input type="number" id="ce-maxhp" min="1" value="10"></label>
+          <label class="field"><span>Current HP</span><input type="number" id="ce-hp" min="0" value="10"></label>
+          <label class="field"><span>Temp HP</span><input type="number" id="ce-thp" min="0" value="0"></label>
+          <label class="field"><span>AC
+            <label class="checkline" style="display:inline-flex;margin:0 0 0 .5rem;"><input type="checkbox" id="ce-ac-auto" checked> auto</label></span>
+            <input type="number" id="ce-ac" min="1" value="10" disabled></label>
+          <label class="field"><span>Speed (ft)</span><input type="number" id="ce-speed" min="0" step="5" value="30"></label>
+          <label class="field"><span>Hit die</span><select id="ce-hitdie">
+            <option value="d8">d8</option><option value="d10">d10</option><option value="d12">d12</option>
+            <option value="d6">d6</option><option value="d20">d20</option>
+          </select></label>
+        </div>
+        <label class="field"><span>Attacks (one per line — “Longsword +5 — 1d8+3 slashing”)</span>
+          <textarea id="ce-attacks"></textarea></label>
+      </section>
+
+      <section class="panel">
+        <h3 class="mt0">Spellcasting</h3>
+        <div class="row">
+          <label class="field" style="margin:0;min-width:140px;"><span>Ability</span>
+            <select id="ce-spellab"><option value="int">Intelligence</option><option value="wis">Wisdom</option><option value="cha">Charisma</option></select></label>
+        </div>
+        <span class="dim" style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;">Slots per level (1–9)</span>
+        <div id="ce-slots" class="row mt1" style="gap:.4rem;"></div>
+        <label class="field mt2"><span>Known / prepared spells (comma separated)</span>
+          <textarea id="ce-spells"></textarea></label>
+      </section>
+
+      <section class="panel">
+        <h3 class="mt0">Equipment &amp; Story</h3>
+        <label class="field"><span>Inventory (one item per line)</span>
+          <textarea id="ce-inv"></textarea></label>
+        <label class="field"><span>Features &amp; traits</span>
+          <textarea id="ce-features"></textarea></label>
+        <label class="field"><span>Backstory / notes</span>
+          <textarea id="ce-notes"></textarea></label>
+        <label class="checkline" id="ce-vault-wrap"><input type="checkbox" id="ce-vault" checked> Save to My Vault</label>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="js/core.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/importers.js"></script>
+<script src="js/embers.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/pages/char-editor.js"></script>
+</body>
+</html>

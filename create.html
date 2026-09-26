@@ -53,80 +53,10 @@
   <!-- ================= STEP 2 ================= -->
   <section class="panel hidden" data-panel="2">
     <div class="panel-title row between">
-      <h2 class="mt0">🗺️ Map Builder</h2>
-      <div class="row">
-        <button class="btn btn-sm" id="map-save-vault">💾 Save map to Vault</button>
-      </div>
+      <h2 class="mt0">🗺️ Advanced Map Builder</h2>
+      <a class="btn btn-sm" href="#" id="open-map-editor">🧰 Open full-screen editor</a>
     </div>
-
-    <div class="row" style="margin-bottom:.75rem;">
-      <span class="dim">Base map:</span>
-      <button class="chip active" data-tpl="cave">👺 Goblin Cave</button>
-      <button class="chip" data-tpl="dungeon">🏰 Stone Dungeon</button>
-      <button class="chip" data-tpl="tavern">🍺 Tavern</button>
-      <button class="chip" data-tpl="blank">⬛ Blank</button>
-      <label class="chip" style="cursor:pointer;">⬆️ Upload
-        <input type="file" id="map-upload" accept="image/*" style="display:none;"></label>
-      <select id="vault-maps" style="width:auto;font-size:.82rem;">
-        <option value="">📂 Load from My Vault…</option>
-      </select>
-    </div>
-
-    <div class="tool-bar" id="map-tools">
-      <button class="tool-btn" data-tool="pan" title="Drag to move around">✋ Pan</button>
-      <button class="tool-btn" data-tool="terrain">🎨 Terrain</button>
-      <button class="tool-btn" data-tool="eraser">🧽 Erase</button>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" data-tool="fog" title="Paint fog to hide areas from players">🌫️ Fog</button>
-      <button class="tool-btn" data-tool="unfog" title="Erase fog to reveal">☀️ Reveal</button>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" data-tool="token" title="Click an empty cell to place the selected NPC token">🎯 Place token</button>
-      <select id="place-npc" style="width:auto;font-size:.8rem;"><option value="">— choose NPC —</option></select>
-      <button class="tool-btn" data-tool="select">👆 Select / move</button>
-      <span class="tool-sep"></span>
-      <span id="swatches" class="row" style="gap:.25rem;"></span>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" id="zoom-in">＋</button>
-      <button class="tool-btn" id="zoom-out">－</button>
-      <button class="tool-btn" id="zoom-fit">⤢ Fit</button>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" id="clear-terrain">Clear terrain</button>
-      <button class="tool-btn" id="clear-fog">Clear fog</button>
-    </div>
-
-    <div class="canvas-frame" style="height:480px;">
-      <canvas id="builder-canvas"></canvas>
-    </div>
-
-    <div class="grid cols-2 mt2" style="grid-template-columns: 1fr 1fr;">
-      <div class="card">
-        <h3 class="mt0">Grid settings</h3>
-        <div class="row">
-          <button class="chip active" data-grid="square">▦ Square</button>
-          <button class="chip" data-grid="hex">⬡ Hex</button>
-        </div>
-        <div class="inline-grid mt1">
-          <label class="field"><span>Columns</span><input type="number" id="g-cols" min="6" max="40" value="16"></label>
-          <label class="field"><span>Rows</span><input type="number" id="g-rows" min="6" max="30" value="12"></label>
-        </div>
-        <label class="field"><span>Cell size: <b id="cs-val">48</b>px</span>
-          <input type="range" id="g-cs" min="28" max="80" value="48"></label>
-      </div>
-      <div class="card">
-        <h3 class="mt0">Selected token</h3>
-        <div id="sel-token-empty" class="dim">Use <b>Select / move</b> and click a token to edit it.</div>
-        <div id="sel-token-panel" class="hidden">
-          <label class="field"><span>Label</span><input type="text" id="t-name"></label>
-          <label class="field"><span>Object scale (size in cells): <b id="t-size-val">1</b></span>
-            <input type="range" id="t-size" min="0.5" max="3" step="0.25" value="1"></label>
-          <div class="row">
-            <button class="btn btn-sm" id="t-dup">⧉ Duplicate</button>
-            <button class="btn btn-sm btn-danger" id="t-del">🗑 Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <div id="builder-root"></div>
     <div class="row between mt2">
       <button class="btn btn-ghost" data-prev="1">← Back</button>
       <button class="btn btn-primary" data-next="3">Next: Spawn NPCs →</button>
@@ -262,6 +192,7 @@
 <script src="js/dice.js"></script>
 <script src="js/ambient.js"></script>
 <script src="js/mapcanvas.js"></script>
+<script src="js/builder.js"></script>
 <script src="js/embers.js"></script>
 <script src="js/guide.js"></script>
 <script src="js/pages/create.js"></script>

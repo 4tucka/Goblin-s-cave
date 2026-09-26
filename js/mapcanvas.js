@@ -146,6 +146,32 @@ class MapCanvas {
     return best;
   }
 
+  propAt(w) {
+    const d = this.data(); if (!d) return null;
+    const cs = d.cs || 48;
+    let best = null, bd = Infinity;
+    for (const p of d.props || []) {
+      const dist = Math.hypot(p.x * cs - w.x, p.y * cs - w.y);
+      const rad = (p.scale || 1) * cs * 0.5;
+      if (dist <= rad && dist < bd) { bd = dist; best = p; }
+    }
+    return best;
+  }
+
+  wallAt(w) {
+    const d = this.data(); if (!d) return null;
+    const cs = d.cs || 48;
+    for (let i = (d.walls || []).length - 1; i >= 0; i--) {
+      const wl = d.walls[i];
+      const x1 = wl.x1 * cs, y1 = wl.y1 * cs, x2 = wl.x2 * cs, y2 = wl.y2 * cs;
+      const L = Math.hypot(x2 - x1, y2 - y1) || 1;
+      const t = clamp(((w.x - x1) * (x2 - x1) + (w.y - y1) * (y2 - y1)) / (L * L), 0, 1);
+      const px = x1 + t * (x2 - x1), py = y1 + t * (y2 - y1);
+      if (Math.hypot(w.x - px, w.y - py) <= (wl.w || 0.2) * cs * 0.7) return wl;
+    }
+    return null;
+  }
+
   emit(action, payload) { this.opts.onAction && this.opts.onAction(action, payload); }
 
   onDown(e) {
@@ -178,10 +204,34 @@ class MapCanvas {
       this.emit('placeToken', { col: cell.col, row: cell.row });
       return;
     }
+    if (m === 'prop') {
+      const p = this.propAt(w);
+      if (p) { this.drag = { kind: 'prop', prop: p, moved: false }; this.emit('selectProp', p); return; }
+      this.emit('placeProp', { x: w.x / cs, y: w.y / cs });
+      return;
+    }
+    if (m === 'wall') {
+      this.drag = { kind: 'wall', x1: w.x / cs, y1: w.y / cs, x2: w.x / cs, y2: w.y / cs };
+      this.preview = { kind: 'wall', ...this.drag };
+      return;
+    }
+    if (m === 'region') {
+      this.drag = { kind: 'region', a: cell, b: cell };
+      this.preview = { kind: 'region', a: cell, b: cell };
+      return;
+    }
+    if (m === 'label') {
+      this.emit('labelAt', { x: w.x / cs, y: w.y / cs });
+      return;
+    }
     if (m === 'select') {
       const t = this.tokenAt(w);
+      const p = t ? null : this.propAt(w);
+      const wl = (t || p) ? null : this.wallAt(w);
       if (t) { this.drag = { kind: 'token', token: t, moved: false }; this.emit('selectToken', t); }
-      else this.emit('selectToken', null);
+      else if (p) { this.drag = { kind: 'prop', prop: p, moved: false }; this.emit('selectProp', p); }
+      else if (wl) { this.emit('selectWall', wl); }
+      else this.emit('selectToken', null), this.emit('selectProp', null);
       return;
     }
     // paint modes
@@ -215,12 +265,30 @@ class MapCanvas {
       this.drag.moved = true;
       const t = this.drag.token;
       const snap = Grid.pick(d.grid, d.cs || 48, w.x, w.y, d.cols, d.rows);
-      const c = Grid.center(d.grid, d.cs || 48, snap.col, snap.row);
-      t.x = c.x / (d.cs || 48); t.y = c.y / (d.cs || 48);
-      // store as cell coords of center for hex: recompute col/row floats
-      if (d.grid === 'hex') { t.x = snap.col + 0.0; t.y = snap.row + 0.0; t._snap = snap; }
+      if (d.grid === 'hex') { t.x = snap.col; t.y = snap.row; }
       else { t.x = snap.col + 0.5; t.y = snap.row + 0.5; }
       this.emit('dragToken', t);
+      this.render();
+      return;
+    }
+    if (this.drag.kind === 'prop') {
+      this.drag.moved = true;
+      const p = this.drag.prop;
+      p.x = w.x / (d.cs || 48); p.y = w.y / (d.cs || 48);
+      this.emit('dragProp', p);
+      this.render();
+      return;
+    }
+    if (this.drag.kind === 'wall') {
+      this.drag.x2 = w.x / (d.cs || 48); this.drag.y2 = w.y / (d.cs || 48);
+      this.preview = { kind: 'wall', ...this.drag };
+      this.render();
+      return;
+    }
+    if (this.drag.kind === 'region') {
+      const cell2 = Grid.pick(d.grid, d.cs || 48, w.x, w.y, d.cols, d.rows);
+      this.drag.b = cell2;
+      this.preview = { kind: 'region', a: this.drag.a, b: cell2 };
       this.render();
       return;
     }
@@ -240,6 +308,15 @@ class MapCanvas {
       this.emit('moveToken', this.drag.token);
     } else if (this.drag.kind === 'token' && !this.drag.moved) {
       this.emit('selectToken', this.drag.token);
+    } else if (this.drag.kind === 'prop') {
+      this.emit(this.drag.moved ? 'moveProp' : 'selectProp', this.drag.prop);
+    } else if (this.drag.kind === 'wall') {
+      this.preview = null;
+      const len = Math.hypot(this.drag.x2 - this.drag.x1, this.drag.y2 - this.drag.y1);
+      if (len > 0.2) this.emit('wallEnd', { ...this.drag });
+    } else if (this.drag.kind === 'region') {
+      this.preview = null;
+      this.emit('regionEnd', { a: this.drag.a, b: this.drag.b });
     }
     this.drag = null;
     this.render();
@@ -385,6 +462,81 @@ class MapCanvas {
       ctx.fillStyle = '#ecdfc8';
       ctx.fillText(t.name || '', 0, rad + 12 / this.view.scale);
       ctx.restore();
+    }
+
+    // props (furniture / objects)
+    for (const p of d.props || []) {
+      const x = p.x * cs, y = p.y * cs;
+      const sel = d.selectedPropId === p.id;
+      ctx.save();
+      ctx.translate(x, y);
+      if (sel) {
+        ctx.beginPath(); ctx.arc(0, 0, (p.scale || 1) * cs * 0.55, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,59,48,.9)'; ctx.lineWidth = 2 / this.view.scale; ctx.stroke();
+      }
+      ctx.font = `${(p.scale || 1) * cs * 0.9}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p.icon || '📦', 0, 0);
+      if (p.name) {
+        ctx.font = `${Math.max(9, cs * 0.2)}px "Segoe UI", sans-serif`;
+        ctx.fillStyle = 'rgba(255,157,141,.85)';
+        ctx.fillText(p.name, 0, (p.scale || 1) * cs * 0.55);
+      }
+      ctx.restore();
+    }
+
+    // walls
+    ctx.lineCap = 'round';
+    for (const wl of d.walls || []) {
+      ctx.beginPath();
+      ctx.moveTo(wl.x1 * cs, wl.y1 * cs);
+      ctx.lineTo(wl.x2 * cs, wl.y2 * cs);
+      ctx.strokeStyle = '#170a0b';
+      ctx.lineWidth = (wl.w || 0.2) * cs;
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,59,48,.5)';
+      ctx.lineWidth = 1.5 / this.view.scale;
+      ctx.stroke();
+      if (d.selectedWallId === wl.id) {
+        ctx.strokeStyle = 'rgba(255,200,120,.9)';
+        ctx.lineWidth = (wl.w || 0.2) * cs + 3 / this.view.scale;
+        ctx.globalAlpha = 0.25;
+        ctx.beginPath(); ctx.moveTo(wl.x1 * cs, wl.y1 * cs); ctx.lineTo(wl.x2 * cs, wl.y2 * cs); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // labels
+    for (const lb of d.labels || []) {
+      ctx.font = `600 ${cs * (lb.size || 0.5)}px "Cinzel", Georgia, serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineWidth = 3 / this.view.scale;
+      ctx.strokeStyle = 'rgba(0,0,0,.75)';
+      ctx.strokeText(lb.text, lb.x * cs, lb.y * cs);
+      ctx.fillStyle = lb.color || '#ff9d8d';
+      ctx.fillText(lb.text, lb.x * cs, lb.y * cs);
+    }
+
+    // drag previews
+    if (this.preview) {
+      if (this.preview.kind === 'wall') {
+        ctx.beginPath();
+        ctx.moveTo(this.preview.x1 * cs, this.preview.y1 * cs);
+        ctx.lineTo(this.preview.x2 * cs, this.preview.y2 * cs);
+        ctx.strokeStyle = 'rgba(255,157,141,.85)';
+        ctx.lineWidth = 0.2 * cs; ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+      if (this.preview.kind === 'region') {
+        const a = this.preview.a, b = this.preview.b;
+        const c0 = Math.min(a.col, b.col), c1 = Math.max(a.col, b.col);
+        const r0 = Math.min(a.row, b.row), r1 = Math.max(a.row, b.row);
+        for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+          Grid.path(ctx, d.grid, cs, c, r);
+          ctx.fillStyle = 'rgba(255,59,48,.22)';
+          ctx.fill();
+        }
+      }
     }
 
     ctx.restore();

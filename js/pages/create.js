@@ -32,7 +32,6 @@ const draft = {
 let roomPosted = null;   // room code once posted
 let currentStep = 1;
 let selectedTokenId = null;
-let placedNpcId = '';
 
 /* ============================================================
    Wizard navigation
@@ -46,7 +45,7 @@ function goStep(n) {
     li.classList.toggle('done', s < n);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (n === 2) { refreshPlaceNpcSelect(); setTimeout(() => mc.fit(), 30); }
+  if (n === 2) { bootBuilder(); setTimeout(() => bld && bld.fit(), 60); }
   if (n === 3) renderNpcList();
   if (n === 4) renderAudioPresets();
   if (n === 5 && roomPosted) enterLobbyView();
@@ -78,177 +77,48 @@ $('#r-access').addEventListener('change', syncAccess);
 syncAccess();
 
 /* ============================================================
-   STEP 2 — Map Builder
+   STEP 2 — Advanced Map Builder (shared engine)
 ============================================================ */
-const mc = new MapCanvas($('#builder-canvas'), {
-  getData: () => ({
-    ...draft.map, terrain: draft.terrain, fog: draft.fog, tokens: draft.tokens,
-    dmView: true, selectedTokenId,
-  }),
-  onAction,
-  canMoveToken: () => true,
-});
+draft.props = draft.props || [];
+draft.walls = draft.walls || [];
+draft.labels = draft.labels || [];
 
-let terrainColor = TERRAIN_SWATCHES[1].c;
-
-function onAction(action, payload) {
-  if (action === 'paintTerrain') { draft.terrain[Grid.cellKey(payload.col, payload.row)] = terrainColor; mc.render(); }
-  if (action === 'eraseTerrain') { delete draft.terrain[Grid.cellKey(payload.col, payload.row)]; mc.render(); }
-  if (action === 'paintFog') { draft.fog.add(Grid.cellKey(payload.col, payload.row)); mc.render(); }
-  if (action === 'eraseFog') { draft.fog.delete(Grid.cellKey(payload.col, payload.row)); mc.render(); }
-  if (action === 'placeToken') placeTokenAt(payload.col, payload.row);
-  if (action === 'selectToken') selectToken(payload);
-  if (action === 'moveToken' || action === 'dragToken') mc.render();
-}
-
-function placeTokenAt(col, row) {
-  const npc = draft.npcs.find(n => n.id === placedNpcId);
-  if (!npc) return toast('Pick which NPC to place (dropdown next to 🎯).', 'err');
-  const t = makeNpcToken(npc, col, row);
-  draft.tokens.push(t);
-  selectToken(t);
-  mc.render();
-}
-
-function makeNpcToken(npc, col, row) {
-  const isHex = draft.map.grid === 'hex';
-  return {
-    id: uid(), npcId: npc.id, name: npc.name, icon: npc.icon, img: null,
-    color: '#4a2018', owner: 'dm',
-    hp: npc.maxHp, maxHp: npc.maxHp, ac: npc.ac, atk: npc.atk,
-    size: 1,
-    x: isHex ? col : col + 0.5,
-    y: isHex ? row : row + 0.5,
-  };
-}
-
-function selectToken(t) {
-  selectedTokenId = t ? t.id : null;
-  $('#sel-token-empty').classList.toggle('hidden', !!t);
-  $('#sel-token-panel').classList.toggle('hidden', !t);
-  if (t) {
-    $('#t-name').value = t.name;
-    $('#t-size').value = t.size;
-    $('#t-size-val').textContent = t.size;
-  }
-  mc.render();
-}
-$('#t-name').addEventListener('input', () => {
-  const t = draft.tokens.find(x => x.id === selectedTokenId);
-  if (t) { t.name = $('#t-name').value; mc.render(); }
-});
-$('#t-size').addEventListener('input', () => {
-  const t = draft.tokens.find(x => x.id === selectedTokenId);
-  if (t) { t.size = parseFloat($('#t-size').value); $('#t-size-val').textContent = t.size; mc.render(); }
-});
-$('#t-del').addEventListener('click', () => {
-  draft.tokens = draft.tokens.filter(x => x.id !== selectedTokenId);
-  selectToken(null); mc.render();
-});
-$('#t-dup').addEventListener('click', () => {
-  const t = draft.tokens.find(x => x.id === selectedTokenId);
-  if (!t) return;
-  const copy = { ...t, id: uid(), x: t.x + (draft.map.grid === 'hex' ? 1 : 1), name: t.name + ' ‧' };
-  draft.tokens.push(copy); selectToken(copy); mc.render();
-});
-
-/* tools */
-$$('#map-tools [data-tool]').forEach(b => b.addEventListener('click', () => {
-  $$('#map-tools [data-tool]').forEach(x => x.classList.toggle('active', x === b));
-  mc.mode = b.dataset.tool;
-}));
-$('#map-tools [data-tool="pan"]').classList.add('active');
-
-/* swatches */
-const sw = $('#swatches');
-TERRAIN_SWATCHES.forEach((s, i) => {
-  const b = document.createElement('button');
-  b.className = 'swatch' + (i === 1 ? ' active' : '');
-  b.style.background = s.c; b.title = s.name;
-  b.addEventListener('click', () => {
-    terrainColor = s.c;
-    $$('.swatch', sw).forEach(x => x.classList.toggle('active', x === b));
+let bld = null;
+function bootBuilder() {
+  if (bld) { bld.setNpcOptions(); return; }
+  bld = initBuilder({
+    root: '#builder-root',
+    state: draft,
+    owner: u && !u.guest ? u.username : null,
+    getNpcList: () => draft.npcs,
   });
-  sw.appendChild(b);
+  bld.setNpcOptions();
+}
+
+/* full-screen editor round-trip */
+$('#open-map-editor').addEventListener('click', e => {
+  e.preventDefault();
+  localStorage.setItem('gc_builder_draft', JSON.stringify({
+    map: draft.map, terrain: draft.terrain, fog: [...draft.fog],
+    tokens: draft.tokens, props: draft.props, walls: draft.walls, labels: draft.labels,
+  }));
+  location.href = 'map-editor.html?return=create';
 });
-
-$('#clear-terrain').addEventListener('click', () => { draft.terrain = {}; mc.render(); });
-$('#clear-fog').addEventListener('click', () => { draft.fog.clear(); mc.render(); });
-$('#zoom-in').addEventListener('click', () => mc.zoomBy(1.2));
-$('#zoom-out').addEventListener('click', () => mc.zoomBy(0.83));
-$('#zoom-fit').addEventListener('click', () => mc.fit());
-
-/* templates & upload */
-$$('[data-tpl]').forEach(b => b.addEventListener('click', () => {
-  $$('[data-tpl]').forEach(x => x.classList.toggle('active', x === b));
-  draft.map.kind = 'template';
-  draft.map.src = TEMPLATES[b.dataset.tpl].src;
-  mc.render();
-}));
-$('#map-upload').addEventListener('change', async e => {
-  const f = e.target.files[0]; if (!f) return;
+(function absorbEditorDraft() {
+  const raw = localStorage.getItem('gc_builder_draft');
+  if (!raw) return;
   try {
-    draft.map.kind = 'upload';
-    draft.map.src = await fileToScaledDataURL(f, 1400, 0.82);
-    $$('[data-tpl]').forEach(x => x.classList.remove('active'));
-    mc.render();
-    toast('Custom map unfurled on the table.', 'ok');
-  } catch { toast('Could not read that image.', 'err'); }
-});
-
-/* vault maps */
-function refreshVaultMaps() {
-  const sel = $('#vault-maps');
-  sel.innerHTML = '<option value="">📂 Load from My Vault…</option>';
-  if (!u || u.guest) return;
-  for (const m of Store.maps().filter(m => m.owner === u.username)) {
-    const o = document.createElement('option');
-    o.value = m.id; o.textContent = m.name;
-    sel.appendChild(o);
-  }
-}
-$('#vault-maps').addEventListener('change', e => {
-  const m = Store.maps().find(x => x.id === e.target.value);
-  if (!m) return;
-  Object.assign(draft.map, { kind: 'vault', src: m.src, cols: m.cols, rows: m.rows, grid: m.grid, cs: draft.map.cs });
-  draft.terrain = { ...(m.terrain || {}) };
-  draft.fog = new Set(m.fog || []);
-  $('#g-cols').value = m.cols; $('#g-rows').value = m.rows;
-  $$('[data-grid]').forEach(x => x.classList.toggle('active', x.dataset.grid === m.grid));
-  mc.fit();
-  toast(`Loaded <b>${escapeHtml(m.name)}</b> from the Vault.`, 'ok');
-});
-$('#map-save-vault').addEventListener('click', () => {
-  const cu = Auth.currentUser();
-  if (!cu || cu.guest) return toast('Sign up to save maps in your Vault.', 'err');
-  const ok = Store.saveMap({
-    id: uid(), owner: cu.username,
-    name: prompt('Name this map:', draft.name || 'My Battlemap') || 'My Battlemap',
-    src: draft.map.src, cols: draft.map.cols, rows: draft.map.rows,
-    grid: draft.map.grid, terrain: draft.terrain, fog: [...draft.fog],
-  });
-  toast(ok ? 'Map saved to My Vault. 🗺️' : 'Storage is full — delete old maps first.', ok ? 'ok' : 'err');
-});
-
-/* grid settings */
-$$('[data-grid]').forEach(b => b.addEventListener('click', () => {
-  $$('[data-grid]').forEach(x => x.classList.toggle('active', x === b));
-  draft.map.grid = b.dataset.grid;
-  // re-snap tokens
-  for (const t of draft.tokens) {
-    const col = Math.floor(t.x), row = Math.floor(t.y);
-    t.x = draft.map.grid === 'hex' ? clamp(col, 0, draft.map.cols - 1) : col + 0.5;
-    t.y = draft.map.grid === 'hex' ? clamp(row, 0, draft.map.rows - 1) : row + 0.5;
-  }
-  mc.render();
-}));
-$('#g-cols').addEventListener('change', () => { draft.map.cols = clamp(parseInt($('#g-cols').value) || 16, 6, 40); mc.fit(); });
-$('#g-rows').addEventListener('change', () => { draft.map.rows = clamp(parseInt($('#g-rows').value) || 12, 6, 30); mc.fit(); });
-$('#g-cs').addEventListener('input', () => {
-  draft.map.cs = parseInt($('#g-cs').value);
-  $('#cs-val').textContent = draft.map.cs;
-  mc.render();
-});
+    const o = JSON.parse(raw);
+    Object.assign(draft.map, o.map || {});
+    draft.terrain = o.terrain || {};
+    draft.fog = new Set(o.fog || []);
+    draft.tokens = o.tokens || [];
+    draft.props = o.props || [];
+    draft.walls = o.walls || [];
+    draft.labels = o.labels || [];
+  } catch {}
+  localStorage.removeItem('gc_builder_draft');
+})();
 
 /* ============================================================
    STEP 3 — NPC spawner
@@ -304,7 +174,7 @@ $('#n-random').addEventListener('click', () => {
 function addNpc(n) {
   n.id = uid(); n.maxHp = n.hp;
   draft.npcs.push(n);
-  renderNpcList(); refreshPlaceNpcSelect();
+  renderNpcList(); bld && bld.setNpcOptions();
   $('#n-name').value = '';
   toast(`<b>${escapeHtml(n.name)}</b> joins the roster. ${n.icon}`, 'ok');
 }
@@ -345,22 +215,11 @@ function renderNpcList() {
     $('[data-del]', row).addEventListener('click', () => {
       draft.npcs = draft.npcs.filter(x => x.id !== n.id);
       draft.tokens = draft.tokens.filter(t => t.npcId !== n.id);
-      renderNpcList(); refreshPlaceNpcSelect(); mc.render();
+      renderNpcList(); if (bld) { bld.setNpcOptions(); bld.render(); }
     });
     list.appendChild(row);
   }
 }
-
-function refreshPlaceNpcSelect() {
-  const sel = $('#place-npc');
-  if (!sel) return;
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">— choose NPC —</option>' +
-    draft.npcs.map(n => `<option value="${n.id}">${n.icon} ${escapeHtml(n.name)}</option>`).join('');
-  sel.value = prev;
-  placedNpcId = sel.value;
-}
-$('#place-npc')?.addEventListener('change', e => { placedNpcId = e.target.value; });
 
 /* ============================================================
    STEP 4 — Atmosphere
@@ -424,6 +283,9 @@ $('#post-room').addEventListener('click', () => {
     fog: [...draft.fog],
     npcs: draft.npcs,
     tokens: draft.tokens.map(t => ({ ...t })),
+    props: (draft.props || []).map(p => ({ ...p })),
+    walls: (draft.walls || []).map(w => ({ ...w })),
+    labels: (draft.labels || []).map(l => ({ ...l })),
     audio: { ...draft.audio },
     initiative: [], turnIdx: 0,
     players: [],
@@ -524,5 +386,4 @@ $('#lobby-chat-send').addEventListener('click', sendLobbyChat);
 $('#lobby-chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendLobbyChat(); });
 
 /* init */
-refreshVaultMaps();
 goStep(1);

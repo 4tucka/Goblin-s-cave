@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map Editor — Goblin's Cave</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=MedievalSharp&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  main { max-width: 1400px; }
+  .canvas-frame { height: 58vh; }
+</style>
+</head>
+<body>
+<main style="margin:0 auto;padding:1.25rem 1.25rem 3rem;">
+  <div class="row between">
+    <h1 class="mt0">🧰 Advanced Map Editor</h1>
+    <div class="row">
+      <span class="dim" id="ed-status"></span>
+      <a class="btn" id="ed-back" href="account.html">← Back</a>
+    </div>
+  </div>
+  <p class="dim mt0">Draw walls 🧱, drop props 📦, place labels 🏷️, paint terrain &amp; fog,
+  and shape the grid. <b>Ctrl+Z / Ctrl+Y</b> for undo/redo. Everything saves to your Vault.</p>
+  <div id="builder-root"></div>
+</main>
+
+<script src="js/core.js"></script>
+<script src="js/realtime.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/mapcanvas.js"></script>
+<script src="js/builder.js"></script>
+<script src="js/embers.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/pages/map-editor.js"></script>
+</body>
+</html>

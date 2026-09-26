@@ -11,6 +11,7 @@ let room = null;
 let myPlayerId = u.id;
 let myChar = null;
 let myReady = false;
+let importedChar = null; // full object from advanced editor / web import
 
 /* token emoji picker */
 let chEmoji = '🧝', chImg = null;
@@ -97,6 +98,7 @@ function showCharPane() {
   $('#room-count').textContent = `${room.players.length}/${room.maxPlayers}`;
   $('#room-state-badge').textContent = room.state;
   $('#enter-hint').textContent = '';
+  $('#ch-advanced').href = 'char-editor.html?return=join&room=' + encodeURIComponent(code);
   $('#ch-save-note').textContent = u.guest ? '(create a free account to keep it)' : '';
 
   const vault = $('#vault-section');
@@ -140,20 +142,22 @@ $('#ch-sheet').addEventListener('change', async e => {
     return;
   }
   try {
-    const data = JSON.parse(await f.text());
-    $('#ch-name').value = data.name || '';
-    $('#ch-level').value = data.level || 1;
-    $('#ch-hp').value = data.hp || data.maxHp || 10;
-    $('#ch-ac').value = data.ac || 10;
-    $('#ch-speed').value = data.speed || 30;
-    $('#ch-atk').value = Array.isArray(data.attacks) ? data.attacks.join('\n') : (data.attacks || '');
-    if (data.class) $('#ch-cls').value = data.class;
-    toast('Sheet imported from JSON. ✅', 'ok');
-  } catch { toast('Could not parse that JSON sheet.', 'err'); }
+    const ch = CharImport.normalize(JSON.parse(await f.text()));
+    importedChar = ch;
+    $('#ch-name').value = ch.name;
+    $('#ch-level').value = ch.level;
+    $('#ch-hp').value = ch.maxHp;
+    $('#ch-ac').value = ch.ac;
+    $('#ch-speed').value = ch.speed;
+    $('#ch-atk').value = ch.attacks || '';
+    if (CharImport.CLASSES.includes(ch.cls)) $('#ch-cls').value = ch.cls;
+    toast(`Sheet imported: <b>${escapeHtml(ch.name)}</b> ✅`, 'ok');
+  } catch { toast('Could not parse that JSON sheet. Try the ⚒️ Advanced editor for more formats.', 'err'); }
 });
 
 function collectCard() {
   return {
+    ...(importedChar || {}),
     name: $('#ch-name').value.trim() || u.name,
     cls: $('#ch-cls').value,
     level: clamp(parseInt($('#ch-level').value) || 1, 1, 20),
@@ -324,4 +328,19 @@ $('#lobby-chat-send').addEventListener('click', sendChat);
 $('#lobby-chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
 /* boot */
+(function absorbDraft() {
+  const raw = localStorage.getItem('gc_char_draft');
+  if (!raw) return;
+  try {
+    importedChar = JSON.parse(raw);
+    localStorage.removeItem('gc_char_draft');
+    $('#ch-name').value = importedChar.name || '';
+    $('#ch-hp').value = importedChar.maxHp || 10;
+    $('#ch-ac').value = importedChar.ac || 10;
+    $('#ch-level').value = importedChar.level || 1;
+    $('#ch-speed').value = importedChar.speed || 30;
+    $('#ch-atk').value = importedChar.attacks || '';
+    toast(`⚒️ <b>${escapeHtml(importedChar.name)}</b> stepped out of the forge.`, 'ok');
+  } catch {}
+})();
 if (code) loadRoom(code); else showPane('pane-code');
