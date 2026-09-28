@@ -26,7 +26,7 @@ const draft = {
     { id: uid(), name: 'Cave Wolf', type: 'Wolf', hp: 11, maxHp: 11, ac: 13, icon: 'assets/icons/wolf.svg', atk: 'Bite +4 — 2d4+2 piercing', stance: 'hostile' },
   ],
   tokens: [],
-  audio: { kind: 'synth', id: 'cave', name: '💧 Cave Drips', url: '' },
+  audio: { kind: 'synth', id: 'cave', name: '💧 Cathedral Cave', url: '' },
 };
 
 let roomPosted = null;   // room code once posted

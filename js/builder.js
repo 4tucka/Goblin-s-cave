@@ -2,7 +2,7 @@
    Shared by the Create-Room wizard (step 2) and the standalone map-editor.html.
    Injects its whole UI into a #builder-root element. */
 
-const PROP_EMOJIS = ['🌳', '', '️', '🍺', '🔥', '️', '🗿', '🕸️', '📦', '🛢️', '🗝️', '💎', '', '🍄', '⛲', '🕯️', '🪨', '🌋'];
+const PROP_EMOJIS = ['🌳', '🪑', '🛏️', '🍺', '🔥', '⚔️', '🗿', '🕸️', '📦', '🛢️', '🗝️', '💎', '⚰️', '🍄', '⛲', '🕯️', '🪨', '🌋'];
 
 function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
   const R = typeof root === 'string' ? $(root) : root;

@@ -48,7 +48,7 @@ const ADVENTURES = {
           tok(npcs[0], 10, 4), tok(npcs[1], 12, 7), tok(npcs[2], 14, 2),
           tok(npcs[3], 13, 5), tok(npcs[4], 2, 1), tok(npcs[5], 13, 10),
         ],
-        audio: { kind: 'synth', id: 'cave', name: '💧 Cave Drips', url: '' },
+        audio: { kind: 'synth', id: 'cave', name: '💧 Cathedral Cave', url: '' },
       };
     },
   },
@@ -156,7 +156,7 @@ const ADVENTURES = {
           tok(npcs[0], 12, 3), tok(npcs[1], 5, 6), tok(npcs[2], 9, 7),
           tok(npcs[3], 4, 1), tok(npcs[4], 15, 10),
         ],
-        audio: { kind: 'synth', id: 'tavern', name: '🍺 Tavern Noise', url: '' },
+        audio: { kind: 'synth', id: 'tavern', name: '🍺 Hearthside Inn', url: '' },
       };
     },
   },
