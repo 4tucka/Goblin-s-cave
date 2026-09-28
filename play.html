@@ -95,6 +95,7 @@
           <button class="tool-btn" data-tab="dice" data-i18n="p_dice">🎲 Dice</button>
           <button class="tool-btn" data-tab="party" data-i18n="p_party">👥 Party</button>
           <button class="tool-btn" data-tab="audio" data-i18n="p_audio">🔊 Audio</button>
+          <button class="tool-btn" data-tab="aidm" data-i18n="p_aidm">🧙 AI DM</button>
         </div>
 
         <div data-pane="chat" class="chat-box" style="flex:1;">
@@ -133,6 +134,15 @@
           <p class="dim" style="font-size:.78rem;" data-i18n="p_audio_note">The DM chose this track for the room. Each adventurer
           controls their own volume.</p>
         </div>
+
+        <div data-pane="aidm" class="hidden chat-box" style="flex:1;">
+          <div class="chat-log" id="aidm-log"></div>
+          <div class="row" id="aidm-chips" style="gap:.3rem;margin:.45rem 0 0;flex-wrap:wrap;"></div>
+          <div class="chat-input-row">
+            <input type="text" id="aidm-input" data-i18n-ph="aidm_ph" placeholder="Declare your action…" maxlength="300">
+            <button class="btn btn-sm btn-gold" id="aidm-send">🧙</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -157,6 +167,9 @@
 <script src="js/mapcanvas.js"></script>
 <script src="js/embers.js"></script>
 <script src="js/guide.js"></script>
+<script src="js/aidm.js"></script>
+<script src="js/aidm-scenes.js"></script>
+<script src="js/aidm-brain.js"></script>
 <script src="js/pages/play.js"></script>
 </body>
 </html>

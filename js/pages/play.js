@@ -409,6 +409,51 @@ function boot() {
     showEnded();
   });
 
+  /* ---------------- AI DUNGEON MASTER ----------------
+     PLAYER → BRAIN → TOOL CALL → VALIDATOR (AIDM.exec) →
+     GAME STATE (room) → saveRoom/Bus → MAP & UI            */
+  (function initAIDM() {
+    const log = $('#aidm-log');
+    const add = (who, text, cls) => {
+      const el = document.createElement('div');
+      el.className = 'chat-msg ' + (cls || '');
+      el.innerHTML = `<span class="who">${who}</span> ${escapeHtml(text)}`;
+      log.appendChild(el); log.scrollTop = log.scrollHeight;
+    };
+    function think(text) {
+      text = (text || '').trim();
+      if (!text) return;
+      add('🗡️ ' + (u?.name || I18n.t('cr_guest')), text);
+      setTimeout(() => {
+        try {
+          const ctx = {
+            room, me: myId, lang: room.lang || I18n.getLang(),
+            sys: m => sysChat(m, false),
+            pushRoll: r => pushRoll(r),
+          };
+          const res = AIDMBrain.think(ctx, text);
+          saveRoom();
+          add('🧙', res.narrative, 'aidm');
+          if (isDM && res.hidden && res.hidden.length) add('🕯️', res.hidden.join(' · '), 'sys');
+        } catch (e) {
+          add('🧙', '…' + (e.message || e), 'sys');
+        }
+      }, 220);
+    }
+    add('🧙', AIDMBrain.greet(room.lang || I18n.getLang()), 'aidm');
+    for (const k of ['aidm_c1', 'aidm_c2', 'aidm_c3', 'aidm_c4', 'aidm_c5']) {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.setAttribute('data-i18n', k);
+      chip.textContent = I18n.t(k);
+      chip.addEventListener('click', () => think(I18n.t(k)));
+      $('#aidm-chips').appendChild(chip);
+    }
+    $('#aidm-send').addEventListener('click', () => { think($('#aidm-input').value); $('#aidm-input').value = ''; });
+    $('#aidm-input').addEventListener('keydown', e => { if (e.key === 'Enter') { think(e.target.value); e.target.value = ''; } });
+    window.__aidm = { think, add };
+  })();
+
   /* ---------------- render all ---------------- */
   function renderAll() {
     $('#sess-name').textContent = room.name;

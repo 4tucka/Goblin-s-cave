@@ -483,6 +483,16 @@ class MapCanvas {
       ctx.font = `${(p.scale || 1) * cs * 0.9}px serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(p.icon || '📦', 0, 0);
+      if (p.door) { /* door state ring: open green, closed amber, locked red, destroyed grey */
+        const st = { open: 'rgba(143,196,106,.95)', closed: 'rgba(232,182,84,.95)', locked: 'rgba(224,91,75,.95)', destroyed: 'rgba(150,150,150,.7)' }[p.state] || 'rgba(232,182,84,.9)';
+        ctx.beginPath(); ctx.arc(0, 0, (p.scale || 1) * cs * 0.5, 0, Math.PI * 2);
+        ctx.strokeStyle = st; ctx.lineWidth = 3 / this.view.scale; ctx.stroke();
+        if (p.state === 'open') { ctx.beginPath(); ctx.arc(0, 0, (p.scale || 1) * cs * 0.62, -0.5, 0.6); ctx.stroke(); }
+      }
+      if (p.item) { /* glinting loot */
+        ctx.beginPath(); ctx.arc(0, (p.scale || 1) * cs * 0.42, 3 / this.view.scale + 1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,215,94,.9)'; ctx.fill();
+      }
       if (p.name) {
         ctx.font = `${Math.max(9, cs * 0.2)}px "Segoe UI", sans-serif`;
         ctx.fillStyle = `rgba(${canvasAccent().rgb2},.85)`;

@@ -385,3 +385,9 @@ input[type=checkbox], input[type=radio] { accent-color: var(--torch); transform:
   background: var(--stone-2); border: 2px solid var(--line); border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
 .adv-ico .icon-img { width: 2.2rem; height: 2.2rem; filter: drop-shadow(0 0 5px rgba(var(--torch-rgb),.4)); }
 .adv-card h3, .adv-card p, .adv-card .row { padding: 0 .9rem; }
+
+/* AI DM panel */
+.chat-msg.aidm { background: rgba(var(--gold-rgb),.08); border: 1px solid rgba(var(--gold-rgb),.35);
+  border-radius: 10px; padding: .45rem .6rem; max-width: 100%; }
+.chat-msg.aidm .who { color: var(--gold); }
+#aidm-chips .chip { font-size: .72rem; padding: .18rem .55rem; }
