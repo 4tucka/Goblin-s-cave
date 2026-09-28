@@ -15,8 +15,8 @@ const u = Auth.currentUser();
 
 if (!room) {
   document.querySelector('main').innerHTML = `<div class="panel center" style="max-width:520px;margin:10vh auto;">
-    <h2>🌑 This room does not exist</h2><p class="dim">It may have been abandoned or expired.</p>
-    <a class="btn btn-primary" href="index.html">Back to the entrance</a></div>`;
+    <h2>${I18n.t('p_noroom_h')}</h2><p class="dim">${I18n.t('p_noroom_p')}</p>
+    <a class="btn btn-primary" href="index.html">${I18n.t('j_back_ent')}</a></div>`;
 } else {
   boot();
 }
@@ -30,14 +30,14 @@ function boot() {
   /* ---------------- header ---------------- */
   $('#sess-name').textContent = room.name;
   $('#sess-code').textContent = code;
-  $('#sess-role').textContent = isDM ? '🕯️ You are the Dungeon Master' : `Playing as ${escapeHtml(u?.name || 'guest')}`;
+  $('#sess-role').textContent = isDM ? '🕯️ ' + I18n.t('p_role_dm') : I18n.t('p_playing_as', { name: escapeHtml(u?.name || I18n.t('cr_guest')) });
   $('#btn-end').classList.toggle('hidden', !isDM);
   $$('.dm-only').forEach(el => el.classList.toggle('hidden', !isDM));
   $('#btn-open-join').addEventListener('click', async () => {
     const url = new URL('join.html', location.href);
     url.search = '?code=' + code;
     await copyText(url.toString());
-    toast('Invite link copied — share it with latecomers.', 'ok');
+    toast(I18n.t('p_invite_copied'), 'ok');
   });
 
   /* ---------------- canvas ---------------- */
@@ -85,8 +85,8 @@ function boot() {
     if (action === 'blockedMove') {
       const cur = currentTurnToken();
       toast(cur
-        ? `⏳ It&rsquo;s <b>${escapeHtml(cur.name)}</b>&rsquo;s turn${isDM ? '' : ' — you can only move your own token on your turn'}.`
-        : 'The DM has not opened combat yet.', 'err');
+        ? '⏳ ' + I18n.t(isDM ? 'p_turn_of' : 'p_not_your_turn', { name: escapeHtml(cur.name) })
+        : I18n.t('p_no_combat'), 'err');
       return;
     }
     if (action === 'paintFog' || action === 'eraseFog') {
@@ -138,9 +138,9 @@ function boot() {
     if (!t) { panel.classList.add('hidden'); return; }
     panel.classList.remove('hidden');
     $('#tp-name').textContent = `${t.icon || ''} ${t.name}`;
-    $('#tp-kind').textContent = t.owner === 'dm' ? 'NPC' : 'Player';
+    $('#tp-kind').textContent = t.owner === 'dm' ? I18n.t('p_kind_npc') : I18n.t('p_kind_pl');
     $('#tp-hp').textContent = t.maxHp > 0 ? `${t.hp}/${t.maxHp}` : '—';
-    $('#tp-ac').textContent = t.ac ? `🛡️ AC ${t.ac}` : '';
+    $('#tp-ac').textContent = t.ac ? `🛡️ ${I18n.t('cr_ac')} ${t.ac}` : '';
     $('#tp-atk').textContent = t.atk ? `⚔️ ${t.atk}` : '';
     const canEditHp = isDM || t.owner === myId;
     ['tp-dmg5', 'tp-dmg1', 'tp-heal1', 'tp-heal5'].forEach(id => $('#' + id).disabled = !canEditHp);
@@ -176,7 +176,7 @@ function boot() {
     $('#btn-next-turn').classList.toggle('hidden', !isDM || !room.initiative.length);
     $('#btn-init-edit').classList.toggle('hidden', !isDM);
     if (!room.initiative.length) {
-      cards.innerHTML = '<span class="dim" style="font-size:.8rem;">No combat yet — the DM sets initiative.</span>';
+      cards.innerHTML = `<span class="dim" style="font-size:.8rem;">${I18n.t('p_noinit')}</span>`;
     }
     room.initiative.forEach((e, i) => {
       const t = room.tokens.find(x => x.id === e.tokenId);
@@ -191,7 +191,7 @@ function boot() {
       cards.appendChild(el);
     });
     const cur = currentTurnToken();
-    $('#turn-hint').textContent = cur ? `▶ ${cur.name}'s turn` : '';
+    $('#turn-hint').textContent = cur ? '▶ ' + I18n.t('p_turn_of', { name: cur.name }) : '';
   }
 
   const amBtn = $('#aimaster-toggle');
@@ -361,7 +361,7 @@ function boot() {
     const npcs = room.tokens.filter(t => t.owner === 'dm');
     if (npcs.length) {
       const h = document.createElement('h3');
-      h.className = 'mt2'; h.textContent = 'Creatures';
+      h.className = 'mt2'; h.textContent = I18n.t('p_creatures');
       box.appendChild(h);
       for (const t of npcs) {
         const st = t.stance === 'friendly' ? '<span class="badge green" title="Friendly">🤝</span>'
@@ -380,10 +380,10 @@ function boot() {
   /* ---------------- audio ---------------- */
   function renderAudio() {
     const a = room.audio;
-    $('#audio-track').textContent = a ? `${a.name}` : 'No ambience set for this room.';
+    $('#audio-track').textContent = a ? `${a.name}` : I18n.t('p_no_amb');
   }
   $('#audio-play').addEventListener('click', () => {
-    if (!room.audio) return toast('The DM hasn&rsquo;t set a track.', 'err');
+    if (!room.audio) return toast(I18n.t('p_notrack'), 'err');
     Ambient.play(room.audio, parseFloat($('#audio-vol').value));
     toast(`Playing <b>${escapeHtml(room.audio.name)}</b>…`, 'ok');
   });
@@ -399,7 +399,7 @@ function boot() {
 
   /* ---------------- end session ---------------- */
   $('#btn-end').addEventListener('click', () => {
-    if (!confirm('End the session for everyone?')) return;
+    if (!confirm(I18n.t('p_end_q'))) return;
     room.state = 'ended';
     Store.upsertHistory({
       code, name: room.name, date: Date.now(), hostName: room.hostName, role: 'host', viewer: room.hostName,
@@ -412,7 +412,7 @@ function boot() {
   /* ---------------- render all ---------------- */
   function renderAll() {
     $('#sess-name').textContent = room.name;
-    $('#sess-state').textContent = room.state;
+    $('#sess-state').textContent = room.state === 'live' ? I18n.t('p_state_live') : room.state;
     $('#sess-players').textContent = `${room.players.length}/${room.maxPlayers} players`;
     renderInit();
     renderChat();

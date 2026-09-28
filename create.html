@@ -42,9 +42,9 @@
             <option value="open" data-i18n="acc_open">Open — anyone with the code</option>
             <option value="password" data-i18n="acc_pass">Password protected</option>
           </select></label>
-        <p class="dim" style="font-size:.82rem;">You are hosting as
-          <b class="gold" id="host-name">…</b>. Guests can host too — but only signed-in
-          DMs keep their rooms in Room History.</p>
+        <p class="dim" style="font-size:.82rem;"><span data-i18n="cr_host_a">You are hosting as</span>
+          <b class="gold" id="host-name">…</b>. <span data-i18n="cr_host_b">Guests can host too — but only signed-in
+          DMs keep their rooms in Room History.</span></p>
       </div>
     </div>
     <div class="row end mt2">
@@ -57,10 +57,10 @@
     <div class="panel-title"><h2 data-i18n="s3_t">👹 NPC &amp; Monster Spawner</h2></div>
     <div class="grid cols-2">
       <div class="card">
-        <h3 class="mt0">Create a creature</h3>
+        <h3 class="mt0" data-i18n="cr_npc_h">Create a creature</h3>
         <div class="inline-grid">
-          <label class="field"><span>Name</span><input type="text" id="n-name" placeholder="Goblin Scout #1"></label>
-          <label class="field"><span>Type</span>
+          <label class="field"><span data-i18n="cr_name">Name</span><input type="text" id="n-name" placeholder="Goblin Scout #1"></label>
+          <label class="field"><span data-i18n="cr_type">Type</span>
             <select id="n-type">
               <option>Goblin</option><option>Hobgoblin</option><option>Bugbear</option>
               <option>Skeleton</option><option>Zombie</option><option>Wolf</option>
@@ -73,28 +73,28 @@
               <option value="neutral" data-i18n="st_neutral">Neutral 😐</option>
               <option value="friendly" data-i18n="st_friendly">Friendly 🤝</option>
             </select></label>
-          <label class="field"><span>Max HP</span><input type="number" id="n-hp" min="1" value="7"></label>
-          <label class="field"><span>AC</span><input type="number" id="n-ac" min="1" value="13"></label>
+          <label class="field"><span data-i18n="cr_maxhp">Max HP</span><input type="number" id="n-hp" min="1" value="7"></label>
+          <label class="field"><span data-i18n="cr_ac">AC</span><input type="number" id="n-ac" min="1" value="13"></label>
         </div>
-        <label class="field"><span>Attack</span>
+        <label class="field"><span data-i18n="cr_atk">Attack</span>
           <input type="text" id="n-atk" placeholder="Scimitar +4 — 1d6+2 slashing"></label>
         <div class="row between">
           <div class="token-emoji-picker" id="n-icons"></div>
         </div>
         <div class="row mt1">
-          <button class="btn btn-primary btn-sm" id="n-add">➕ Add to roster</button>
-          <button class="btn btn-sm" id="n-random">🎲 Random goblin</button>
+          <button class="btn btn-primary btn-sm" id="n-add" data-i18n="cr_add">➕ Add to roster</button>
+          <button class="btn btn-sm" id="n-random" data-i18n="cr_random">🎲 Random goblin</button>
         </div>
         <div class="row mt1">
           <button class="btn btn-sm btn-block" id="n-charbuilder" data-i18n="n_charbuilder">🧬 Build a full character as a friendly NPC</button>
         </div>
         <hr style="border-color:var(--line-soft);">
-        <label class="field"><span>Import stat blocks (JSON array: name, type, hp, ac, icon, atk, stance)</span>
+        <label class="field"><span data-i18n="cr_json_lbl">Import stat blocks (JSON array: name, type, hp, ac, icon, atk, stance)</span>
           <textarea id="n-json" placeholder='[{"name":"Vex the Rat King","type":"Custom","hp":22,"ac":12,"icon":"🐀","atk":"Bite +3 — 1d4+1","stance":"neutral"}]'></textarea></label>
-        <button class="btn btn-sm" id="n-import">📥 Import JSON</button>
+        <button class="btn btn-sm" id="n-import" data-i18n="cr_json_btn">📥 Import JSON</button>
       </div>
       <div class="card">
-        <h3 class="mt0">Roster <span class="badge dim" id="npc-count">0</span></h3>
+        <h3 class="mt0"><span data-i18n="cr_roster">Roster</span> <span class="badge dim" id="npc-count">0</span></h3>
         <div id="npc-list" class="scrollbox" style="max-height:420px;"></div>
         <p class="dim mt1" style="font-size:.8rem;" data-i18n="n_tip">Tip: create your creatures here first — on the
         next step, the Map Builder&rsquo;s 🎯 <b>Place token</b> tool puts them on the grid. Click a stance badge in the
@@ -111,7 +111,7 @@
   <section class="panel hidden" data-panel="3">
     <div class="panel-title row between">
       <h2 class="mt0" data-i18n="s2_t">🗺️ Advanced Map Builder</h2>
-      <a class="btn btn-sm" href="#" id="open-map-editor">🧰 Open full-screen editor</a>
+      <a class="btn btn-sm" href="#" id="open-map-editor" data-i18n="cr_full_ed">🧰 Open full-screen editor</a>
     </div>
     <div id="builder-root"></div>
     <div class="row between mt2">
@@ -123,28 +123,28 @@
   <!-- ================= STEP 4 ================= -->
   <section class="panel hidden" data-panel="4">
     <div class="panel-title"><h2 data-i18n="s4_t">🔊 Atmosphere &amp; Audio Manager</h2></div>
-    <p class="dim mt0">Choose what the party hears when they descend. Ambient loops are synthesized live —
+    <p class="dim mt0" data-i18n="cr_audio_p">Choose what the party hears when they descend. Ambient loops are synthesized live —
     no downloads. You can also attach an audio URL or upload an MP3.</p>
     <div class="grid cols-3" id="audio-presets"></div>
     <div class="grid cols-2 mt2">
       <div class="card">
-        <h3 class="mt0">🔗 External audio URL</h3>
-        <label class="field"><span>Direct link to an .mp3 / stream</span>
+        <h3 class="mt0" data-i18n="cr_ext_h">🔗 External audio URL</h3>
+        <label class="field"><span data-i18n="cr_ext_lbl">Direct link to an .mp3 / stream</span>
           <input type="url" id="a-url" placeholder="https://example.com/ambience.mp3"></label>
-        <button class="btn btn-sm" id="a-url-set">Use this URL</button>
+        <button class="btn btn-sm" id="a-url-set" data-i18n="cr_ext_btn">Use this URL</button>
       </div>
       <div class="card">
-        <h3 class="mt0">⬆️ Upload a track</h3>
+        <h3 class="mt0" data-i18n="cr_up_h">⬆️ Upload a track</h3>
         <input type="file" id="a-file" accept="audio/*">
-        <p class="dim mt1" style="font-size:.78rem;" id="a-file-note">Uploaded audio plays on your device
+        <p class="dim mt1" style="font-size:.78rem;" id="a-file-note" data-i18n="cr_up_note">Uploaded audio plays on your device
         and travels with the room as a temporary stream.</p>
       </div>
     </div>
     <div class="row mt2">
-      <span class="dim">Room track:</span><b class="gold" id="a-current">🌧️ Dungeon Rain</b>
-      <button class="btn btn-sm" id="a-preview">▶ Preview</button>
-      <button class="btn btn-sm" id="a-stop">⏹ Stop</button>
-      <label class="field" style="margin:0 0 0 auto;width:160px;"><span>Volume</span>
+      <span class="dim" data-i18n="cr_track">Room track:</span><b class="gold" id="a-current">🌧️ Dungeon Rain</b>
+      <button class="btn btn-sm" id="a-preview" data-i18n="cr_preview">▶ Preview</button>
+      <button class="btn btn-sm" id="a-stop" data-i18n="cr_stop">⏹ Stop</button>
+      <label class="field" style="margin:0 0 0 auto;width:160px;"><span data-i18n="p_vol">Volume</span>
         <input type="range" id="a-vol" min="0" max="1" step="0.05" value="0.5"></label>
     </div>
     <div class="row between mt2">
@@ -157,35 +157,35 @@
   <section class="panel torch-lit hidden" data-panel="5">
     <div class="panel-title"><h2 data-i18n="s5_t">🏰 Staging Lobby</h2></div>
     <div id="lobby-setup">
-      <p class="dim">Happy with the lair? Posting the room opens the waiting lobby and generates your invite.</p>
+      <p class="dim" data-i18n="cr_lobby_p">Happy with the lair? Posting the room opens the waiting lobby and generates your invite.</p>
       <button class="btn btn-primary btn-lg" id="post-room" data-i18n="post_btn">📯 Post / Launch Room</button>
     </div>
     <div id="lobby-live" class="hidden">
       <div class="grid cols-2" style="grid-template-columns: 300px 1fr;">
         <div>
-          <p class="dim center mt0 mb0">Share this code</p>
+          <p class="dim center mt0 mb0" data-i18n="cr_share">Share this code</p>
           <div class="room-code" id="lobby-code">·····</div>
           <div class="row center" style="justify-content:center;">
             <button class="btn btn-sm" id="copy-code" data-i18n="copy_code">Copy code</button>
             <button class="btn btn-sm" id="copy-link" data-i18n="copy_link">Copy invite link</button>
           </div>
           <hr style="border-color:var(--line-soft);">
-          <p class="dim" style="font-size:.82rem;">Waiting for adventurers to Ready up.
+          <p class="dim" style="font-size:.82rem;" data-i18n="cr_wait">Waiting for adventurers to Ready up.
           You can start once everyone is ready — or force it when you've had enough.</p>
           <button class="btn btn-green btn-block" id="start-session" disabled data-i18n="start_btn">⚔️ Start Game Session</button>
           <button class="btn btn-sm btn-danger btn-block mt1" id="abandon-room" data-i18n="abandon">Abandon room</button>
         </div>
         <div>
-          <h3 class="mt0">Party roster <span class="badge dim" id="lobby-count">0</span></h3>
+          <h3 class="mt0"><span data-i18n="cr_roster_h">Party roster</span> <span class="badge dim" id="lobby-count">0</span></h3>
           <div id="lobby-players"></div>
-          <p class="dim hidden" id="lobby-empty">No players yet — share the code or open
+          <p class="dim hidden" id="lobby-empty" data-i18n="cr_empty">No players yet — share the code or open
           <code>join.html</code> in another tab to test the flow!</p>
-          <h3 class="mt2">Lobby chat</h3>
+          <h3 class="mt2" data-i18n="cr_chat_h">Lobby chat</h3>
           <div class="chat-box" style="height:260px;">
             <div class="chat-log" id="lobby-chat"></div>
             <div class="chat-input-row">
-              <input type="text" id="lobby-chat-input" placeholder="Say something to the party…" maxlength="300">
-              <button class="btn btn-sm btn-primary" id="lobby-chat-send">Send</button>
+              <input type="text" id="lobby-chat-input" data-i18n-ph="cr_chat_ph" placeholder="Say something to the party…" maxlength="300">
+              <button class="btn btn-sm btn-primary" id="lobby-chat-send" data-i18n="ui_send">Send</button>
             </div>
           </div>
         </div>

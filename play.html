@@ -40,7 +40,7 @@
   <!-- initiative bar -->
   <div style="padding:.6rem 1rem 0;">
     <div class="init-bar" id="init-bar">
-      <span class="dim" style="font-size:.8rem;padding:0 .4rem;">Initiative:</span>
+      <span class="dim" style="font-size:.8rem;padding:0 .4rem;" data-i18n="p_init">Initiative:</span>
       <div id="init-cards" class="row" style="gap:.5rem;flex:1;overflow-x:auto;"></div>
       <button class="btn btn-sm hidden" id="btn-prev-turn">◀</button>
       <button class="btn btn-sm hidden" id="btn-next-turn" data-i18n="p_next">Next Turn ▶</button>
@@ -59,7 +59,7 @@
         <span class="tool-sep"></span>
         <button class="tool-btn" id="v-zoom-in">＋</button>
         <button class="tool-btn" id="v-zoom-out">－</button>
-        <button class="tool-btn" id="v-fit">⤢ Fit</button>
+        <button class="tool-btn" id="v-fit" data-i18n="p_fit">⤢ Fit</button>
         <button class="tool-btn" id="aimaster-toggle" title="AI Master narrates turns in the room language">🎭 AI Master</button>
         <span class="dim" style="font-size:.78rem;" id="turn-hint"></span>
       </div>
@@ -72,7 +72,7 @@
           <b id="tp-name"></b>
           <span class="badge dim" id="tp-kind"></span>
           <div class="spacer"></div>
-          <span>HP:</span>
+          <span data-i18n="p_hp">HP:</span>
           <button class="btn btn-sm" id="tp-dmg5">−5</button>
           <button class="btn btn-sm" id="tp-dmg1">−1</button>
           <b id="tp-hp"></b>
@@ -80,7 +80,7 @@
           <button class="btn btn-sm" id="tp-heal5">+5</button>
           <span class="dim" id="tp-ac"></span>
           <span class="dim" id="tp-atk" style="max-width:280px;"></span>
-          <button class="btn btn-sm btn-danger hidden" id="tp-del">Remove</button>
+          <button class="btn btn-sm btn-danger hidden" id="tp-del" data-i18n="p_remove">Remove</button>
           <button class="btn btn-sm" id="tp-close">✕</button>
         </div>
       </div>
@@ -99,20 +99,20 @@
         <div data-pane="chat" class="chat-box" style="flex:1;">
           <div class="chat-log" id="chat-log"></div>
           <div class="chat-input-row">
-            <input type="text" id="chat-input" placeholder="Speak… (/roll 1d20+5, /r d20 adv)" maxlength="300">
+            <input type="text" id="chat-input" data-i18n-ph="p_chat_ph" placeholder="Speak… (/roll 1d20+5, /r d20 adv)" maxlength="300">
             <button class="btn btn-sm btn-primary" id="chat-send">➤</button>
           </div>
         </div>
 
         <div data-pane="dice" class="hidden" style="flex:1;overflow-y:auto;">
-          <div class="die-result" id="die-result"><div class="big">🎲</div><div class="dim">Pick your poison</div></div>
+          <div class="die-result" id="die-result"><div class="big">🎲</div><div class="dim" data-i18n="p_pick">Pick your poison</div></div>
           <div class="dice-tray" id="dice-tray"></div>
           <div class="row mt1">
-            <input type="number" id="dice-mod" placeholder="mod" style="width:70px;" value="0">
-            <button class="chip" id="adv-toggle">⬆ advantage</button>
-            <button class="chip" id="dis-toggle">⬇ disadvantage</button>
+            <input type="number" id="dice-mod" data-i18n-ph="p_mod" placeholder="mod" style="width:70px;" value="0">
+            <button class="chip" id="adv-toggle" data-i18n="p_adv">⬆ advantage</button>
+            <button class="chip" id="dis-toggle" data-i18n="p_dis">⬇ disadvantage</button>
           </div>
-          <p class="dim mt1" style="font-size:.78rem;">Commands in chat: <code>/roll 2d6+3</code>,
+          <p class="dim mt1" style="font-size:.78rem;" data-i18n="p_cmd">Commands in chat: <code>/roll 2d6+3</code>,
           <code>/r d20 adv</code>, <code>/roll 4d6kh3</code></p>
         </div>
 
@@ -129,7 +129,7 @@
           </div>
           <label class="field mt1"><span data-i18n="p_vol">Volume</span>
             <input type="range" id="audio-vol" min="0" max="1" step="0.05" value="0.4"></label>
-          <p class="dim" style="font-size:.78rem;">The DM chose this track for the room. Each adventurer
+          <p class="dim" style="font-size:.78rem;" data-i18n="p_audio_note">The DM chose this track for the room. Each adventurer
           controls their own volume.</p>
         </div>
       </div>
@@ -140,9 +140,9 @@
 <!-- ended overlay -->
 <div class="modal-overlay hidden" id="ended-overlay">
   <div class="modal center">
-    <h2>🌅 The session has ended</h2>
-    <p class="dim">The torches are snuffed. Thanks for delving with us!</p>
-    <a class="btn btn-primary" href="index.html">Back to the Cave Entrance</a>
+    <h2 data-i18n="p_ended_h">🌅 The session has ended</h2>
+    <p class="dim" data-i18n="p_ended_p">The torches are snuffed. Thanks for delving with us!</p>
+    <a class="btn btn-primary" href="index.html" data-i18n="p_back">Back to the Cave Entrance</a>
   </div>
 </div>
 

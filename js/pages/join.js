@@ -32,7 +32,7 @@ $('#ch-img').addEventListener('change', async e => {
   try {
     chImg = await fileToScaledDataURL(f, 200);
     $('#ch-preview').innerHTML = `<img src="${chImg}" style="width:100%;height:100%;object-fit:cover;">`;
-  } catch { toast('Could not read that image.', 'err'); }
+  } catch { toast(I18n.t('j_imgbad'), 'err'); }
 });
 
 /* ============================================================
@@ -53,7 +53,7 @@ function extractCode(raw) {
 $('#code-form').addEventListener('submit', e => {
   e.preventDefault();
   const c = extractCode($('#code-input').value);
-  if (c.length < 4) return toast('Room codes are 5 characters.', 'err');
+  if (c.length < 4) return toast(I18n.t('j_toast_code5'), 'err');
   loadRoom(c);
 });
 
@@ -107,7 +107,7 @@ function showCharPane() {
     const box = $('#vault-choices');
     box.innerHTML = '';
     const chars = Store.charsFor(u.username);
-    if (!chars.length) box.innerHTML = '<p class="dim">Your Vault is empty — forge characters on your Account page.</p>';
+    if (!chars.length) box.innerHTML = `<p class="dim">${I18n.t('j_vault_empty')}</p>`;
     for (const c of chars) {
       const card = document.createElement('div');
       card.className = 'card clickable';
@@ -138,7 +138,7 @@ function pickVaultChar(c) {
 $('#ch-sheet').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   if (/pdf$/i.test(f.name)) {
-    toast('📄 PDF sheets can&rsquo;t be auto-parsed in the cave — fill the card manually (details from your PDF).', 'err');
+    toast('📄 ' + I18n.t('j_pdf'), 'err');
     return;
   }
   try {
@@ -152,7 +152,7 @@ $('#ch-sheet').addEventListener('change', async e => {
     $('#ch-atk').value = ch.attacks || '';
     if (CharImport.CLASSES.includes(ch.cls)) $('#ch-cls').value = ch.cls;
     toast(`Sheet imported: <b>${escapeHtml(ch.name)}</b> ✅`, 'ok');
-  } catch { toast('Could not parse that JSON sheet. Try the ⚒️ Advanced editor for more formats.', 'err'); }
+  } catch { toast(I18n.t('j_jsonbad'), 'err'); }
 });
 
 function collectCard() {
@@ -175,14 +175,14 @@ $('#enter-lobby').addEventListener('click', () => {
   room = Store.getRoom(code);
   if (!room) return showPane('pane-gone');
   if (room.players.length >= room.maxPlayers && !room.players.find(p => p.id === myPlayerId)) {
-    $('#enter-hint').textContent = '😱 The room is full.';
-    return toast('This room is full.', 'err');
+    $('#enter-hint').textContent = I18n.t('j_hint_full');
+    return toast(I18n.t('j_toast_full'), 'err');
   }
   myChar = collectCard();
 
   if ($('#ch-save').checked && !u.guest) {
     Store.saveChar({ id: uid(), owner: u.username, ...myChar });
-    toast('Character saved to My Vault.', 'ok');
+    toast(I18n.t('j_toast_saved'), 'ok');
   }
 
   room = Store.getRoom(code);
@@ -208,7 +208,7 @@ $('#enter-lobby').addEventListener('click', () => {
     room.players.push({ id: myPlayerId, name: u.name, guest: !!u.guest, ready: false, character: myChar });
     room.tokens = room.tokens.filter(t => t.playerId !== myPlayerId);
     room.tokens.push(token);
-    room.chat.push({ id: uid(), who: u.name, text: `entered the cave as ${myChar.name}.`, type: 'sys', ts: Date.now() });
+    room.chat.push({ id: uid(), who: u.name, text: I18n.t('j_entered', { name: myChar.name }), type: 'sys', ts: Date.now() });
   }
   Store.saveRoom(room);
   Auth.bumpStat('roomsJoined');
@@ -244,7 +244,7 @@ function renderLobby() {
   dmRow.className = 'player-row';
   dmRow.innerHTML = `<div class="avatar">🕯️</div>
     <div class="grow"><div class="name">${escapeHtml(room.hostName)}</div>
-    <div class="sub">Dungeon Master</div></div><span class="badge gold">DM</span>`;
+    <div class="sub">${I18n.t('j_dm_lbl')}</div></div><span class="badge gold">${I18n.t('j_dm')}</span>`;
   roster.appendChild(dmRow);
   for (const p of room.players) {
     const row = document.createElement('div');
@@ -253,10 +253,10 @@ function renderLobby() {
     row.innerHTML = `
       <div class="avatar">${ch.tokenImg ? `<img src="${ch.tokenImg}">` : (ch.tokenEmoji || '🎭')}</div>
       <div class="grow">
-        <div class="name">${escapeHtml(p.name)} ${p.id === myPlayerId ? '<span class="badge blue">you</span>' : ''} ${p.guest ? '<span class="badge dim">guest</span>' : ''}</div>
+        <div class="name">${escapeHtml(p.name)} ${p.id === myPlayerId ? `<span class="badge blue">${I18n.t('j_you')}</span>` : ''} ${p.guest ? `<span class="badge dim">${I18n.t('cr_guest')}</span>` : ''}</div>
         <div class="sub">${escapeHtml(ch.name || '?')} — ${escapeHtml(ch.cls || '?')} Lv ${ch.level || 1} · ❤️ ${ch.hp}/${ch.maxHp} · 🛡️ ${ch.ac}</div>
       </div>
-      ${p.ready ? '<span class="badge green">✔ Ready</span>' : '<span class="badge dim">not ready</span>'}`;
+      ${p.ready ? `<span class="badge green">${I18n.t('cr_ready')}</span>` : `<span class="badge dim">${I18n.t('j_notready')}</span>`}`;
     roster.appendChild(row);
   }
 
@@ -265,11 +265,11 @@ function renderLobby() {
   const btn = $('#ready-btn');
   btn.textContent = myReady ? I18n.t('j_unready') : I18n.t('j_ready');
   btn.className = 'btn ' + (myReady ? 'btn-danger' : 'btn-green');
-  $('#ready-hint').textContent = myReady ? 'The DM can see you are ready.' : '';
+  $('#ready-hint').textContent = myReady ? I18n.t('j_ready_hint') : '';
 
   const ch = me?.character || myChar || {};
   $('#my-char-summary').innerHTML = `
-    <div class="panel-title"><h3 class="mt0">Your hero</h3></div>
+    <div class="panel-title"><h3 class="mt0">${I18n.t('j_your_hero')}</h3></div>
     <div class="row">
       <div style="font-size:2.2rem;">${ch.tokenImg ? `<img src="${ch.tokenImg}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">` : (ch.tokenEmoji || '❓')}</div>
       <div><b>${escapeHtml(ch.name || '')}</b><br>

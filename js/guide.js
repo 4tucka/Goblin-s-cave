@@ -252,7 +252,7 @@ I know my way around the cave and the rules of the game. Try:
   }
 
   /* ---------------- widget UI ---------------- */
-  const CHIPS = ['How do I create a room?', 'How does grappling work?', 'Generate an NPC', 'Random encounter', 'Loot ideas'];
+  const CHIPS = [['g_c1', 'How do I create a room?'], ['g_c2', 'How does grappling work?'], ['g_c3', 'Generate an NPC'], ['g_c4', 'Random encounter'], ['g_c5', 'Loot ideas']];
 
   function mount() {
     if ($('#guide-fab')) return;
@@ -307,10 +307,10 @@ I know my way around the cave and the rules of the game. Try:
     $('#guide-close').addEventListener('click', () => panel.classList.add('hidden'));
 
     const chips = $('#guide-chips');
-    CHIPS.forEach(c => {
+    CHIPS.forEach(([k, q]) => {
       const b = document.createElement('span');
-      b.className = 'chip'; b.textContent = c;
-      b.addEventListener('click', () => send(c));
+      b.className = 'chip'; b.dataset.i18n = k; b.textContent = I18n.t(k);
+      b.addEventListener('click', () => send(q));
       chips.appendChild(b);
     });
 

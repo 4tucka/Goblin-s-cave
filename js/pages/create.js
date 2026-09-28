@@ -56,9 +56,9 @@ $$('#steps li').forEach(li => li.addEventListener('click', () => {
 $$('[data-next]').forEach(b => b.addEventListener('click', () => {
   if (currentStep === 1) {
     draft.name = $('#r-name').value.trim();
-    if (!draft.name) return toast('Give your lair a name first!', 'err');
+    if (!draft.name) return toast(I18n.t('cr_toast_name'), 'err');
     draft.password = $('#r-access').value === 'password' ? $('#r-pass').value.trim() : '';
-    if ($('#r-access').value === 'password' && !draft.password) return toast('Set a password, or switch the room to Open.', 'err');
+    if ($('#r-access').value === 'password' && !draft.password) return toast(I18n.t('cr_toast_pass'), 'err');
     draft.maxPlayers = clamp(parseInt($('#r-max').value) || 6, 1, 12);
   }
   goStep(+b.dataset.next);
@@ -144,7 +144,7 @@ function persistWizardDraft() {
         icon: ch.tokenEmoji || '🎭', img: ch.tokenImg || null,
         atk: ch.attacks || '', stance: 'friendly',
       }, true);
-      toast(`🤝 <b>${escapeHtml(ch.name)}</b> was forged as a friendly NPC.`, 'ok');
+      toast(I18n.t('cr_npc_forged', { name: escapeHtml(ch.name) }), 'ok');
     }
   } catch {}
   localStorage.removeItem('gc_char_draft');
@@ -251,7 +251,7 @@ function addNpc(n, quiet = false) {
   draft.npcs.push(n);
   renderNpcList(); bld && bld.setNpcOptions();
   $('#n-name').value = '';
-  if (!quiet) toast(`<b>${escapeHtml(n.name)}</b> joins the roster. ${n.icon}`, 'ok');
+  if (!quiet) toast(I18n.t('cr_joins', { name: escapeHtml(n.name) }) + ' ' + n.icon, 'ok');
 }
 
 $('#n-import').addEventListener('click', () => {
@@ -270,8 +270,8 @@ $('#n-import').addEventListener('click', () => {
       n++;
     }
     $('#n-json').value = '';
-    toast(`Imported ${n} stat block${n === 1 ? '' : 's'}.`, 'ok');
-  } catch { toast('That JSON could not be parsed.', 'err'); }
+    toast(I18n.t('cr_imported', { n }), 'ok');
+  } catch { toast(I18n.t('cr_jsonbad'), 'err'); }
 });
 
 function renderNpcList() {
@@ -325,11 +325,11 @@ function renderAudioPresets() {
 }
 $('#a-url-set').addEventListener('click', () => {
   const url = $('#a-url').value.trim();
-  if (!url) return toast('Paste a URL first.', 'err');
+  if (!url) return toast(I18n.t('cr_urlfirst'), 'err');
   draft.audio = { kind: 'url', id: 'url', name: '🔗 External track', url };
   $('#a-current').textContent = draft.audio.name;
   renderAudioPresets();
-  toast('External track attached.', 'ok');
+  toast(I18n.t('cr_extok'), 'ok');
 });
 $('#a-file').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
@@ -337,11 +337,11 @@ $('#a-file').addEventListener('change', e => {
   draft.audio = { kind: 'url', id: 'file', name: `⬆️ ${f.name}`, url };
   $('#a-current').textContent = draft.audio.name;
   renderAudioPresets();
-  toast('Track uploaded. Note: uploaded audio streams from the DM&rsquo;s device.', 'ok');
+  toast(I18n.t('cr_uploaded'), 'ok');
 });
 $('#a-preview').addEventListener('click', () => {
   Ambient.play(draft.audio, parseFloat($('#a-vol').value));
-  toast(`Previewing <b>${escapeHtml(draft.audio.name)}</b>…`);
+  toast(I18n.t('cr_previewing', { name: escapeHtml(draft.audio.name) }));
 });
 $('#a-stop').addEventListener('click', () => Ambient.stop());
 $('#a-vol').addEventListener('input', () => Ambient.setVolume(parseFloat($('#a-vol').value)));
@@ -372,14 +372,14 @@ $('#post-room').addEventListener('click', () => {
     audio: { ...draft.audio },
     initiative: [], turnIdx: 0,
     players: [],
-    chat: [{ id: uid(), who: cu.name, text: 'The room is open. Light the torches! 🕯️', type: 'sys', ts: Date.now() }],
+    chat: [{ id: uid(), who: cu.name, text: I18n.t('cr_sys_open'), type: 'sys', ts: Date.now() }],
   };
   Store.saveRoom(room);
   roomPosted = code;
   Auth.bumpStat('roomsHosted');
   Store.upsertHistory({ code, name: room.name, date: Date.now(), hostName: cu.name, role: 'host', viewer: cu.name, players: [], state: 'lobby' });
   enterLobbyView();
-  toast('📯 Room posted! Share the code with your party.', 'ok');
+  toast(I18n.t('cr_posted'), 'ok');
 });
 
 function enterLobbyView() {
@@ -407,16 +407,16 @@ function renderLobby() {
     row.innerHTML = `
       <div class="avatar">${ch.tokenImg ? `<img src="${ch.tokenImg}">` : (ch.tokenEmoji || '🎭')}</div>
       <div class="grow">
-        <div class="name">${escapeHtml(p.name)} ${p.guest ? '<span class="badge dim">guest</span>' : ''}</div>
-        <div class="sub">${escapeHtml(ch.name || 'No character')} — ${escapeHtml(ch.cls || '?')} Lv ${ch.level || 1} · ❤️ ${ch.hp}/${ch.maxHp} · 🛡️ ${ch.ac}</div>
+        <div class="name">${escapeHtml(p.name)} ${p.guest ? `<span class="badge dim">${I18n.t('cr_guest')}</span>` : ''}</div>
+        <div class="sub">${escapeHtml(ch.name || I18n.t('cr_nochar'))} — ${escapeHtml(ch.cls || '?')} Lv ${ch.level || 1} · ❤️ ${ch.hp}/${ch.maxHp} · 🛡️ ${ch.ac}</div>
       </div>
-      ${p.ready ? '<span class="badge green">✔ Ready</span>' : '<span class="badge dim">… not ready</span>'}`;
+      ${p.ready ? `<span class="badge green">${I18n.t('cr_ready')}</span>` : `<span class="badge dim">${I18n.t('cr_notready')}</span>`}`;
     box.appendChild(row);
   }
   const allReady = room.players.length > 0 && room.players.every(p => p.ready);
   const start = $('#start-session');
   start.disabled = !allReady;
-  start.textContent = allReady ? '⚔️ Start Game Session' : room.players.length ? '⏳ Waiting for Ready…' : '⏳ Waiting for players…';
+  start.textContent = allReady ? I18n.t('start_btn') : room.players.length ? I18n.t('cr_wait_ready') : I18n.t('cr_wait_players');
   renderChat(room, $('#lobby-chat'));
 }
 
@@ -424,7 +424,7 @@ $('#start-session').addEventListener('click', () => {
   const room = Store.getRoom(roomPosted);
   if (!room) return;
   room.state = 'live';
-  room.chat.push({ id: uid(), who: 'DM', text: 'The session begins — roll for initiative!', type: 'sys', ts: Date.now() });
+  room.chat.push({ id: uid(), who: 'DM', text: I18n.t('cr_sys_start'), type: 'sys', ts: Date.now() });
   if (I18n.aiMasterOn()) {
     room.chat.push({ id: uid(), who: '🎭 AI Master', text: I18n.narrate(room.lang || I18n.getLang(), 'the party'), type: 'msg', ts: Date.now() });
   }
@@ -433,18 +433,18 @@ $('#start-session').addEventListener('click', () => {
 });
 
 $('#abandon-room').addEventListener('click', () => {
-  if (!confirm('Collapse this room? Players will be ejected into the dark.')) return;
+  if (!confirm(I18n.t('cr_abandon_q'))) return;
   Store.deleteRoom(roomPosted);
   location.href = 'index.html';
 });
 
 $('#copy-code').addEventListener('click', async () => {
-  await copyText(roomPosted); toast('Code copied.', 'ok');
+  await copyText(roomPosted); toast(I18n.t('ui_copied'), 'ok');
 });
 $('#copy-link').addEventListener('click', async () => {
   const url = new URL('join.html', location.href);
   url.search = '?code=' + roomPosted;
-  await copyText(url.toString()); toast('Invite link copied.', 'ok');
+  await copyText(url.toString()); toast(I18n.t('ui_copied'), 'ok');
 });
 
 /* lobby chat (shared helper with join page) */

@@ -11,11 +11,11 @@ const existing = editId ? Store.getChar(editId) : null;
 
 if (returnTo === 'join' && roomCode) {
   $('#ce-back').href = 'join.html?code=' + roomCode;
-  $('#ce-back').textContent = '← Back to joining';
+  $('#ce-back').textContent = I18n.t('ce_back_join');
 }
 if (returnTo === 'npc') {
   $('#ce-back').href = 'create.html';
-  $('#ce-back').textContent = '← Back to the room wizard';
+  $('#ce-back').textContent = I18n.t('ce_back_npc');
 }
 
 const SKILLS = [
@@ -37,26 +37,26 @@ const ABIL = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const ABIL_LABEL = { str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA' };
 
 /* ---------- build dynamic UI ---------- */
-$('#ce-cls').innerHTML = CharImport.CLASSES.map(c => `<option>${c}</option>`).join('');
+$('#ce-cls').innerHTML = CharImport.CLASSES.map(c => `<option data-i18n="ce_cl_${c}">${c}</option>`).join('');
 
 const abilInputs = {};
 $('#ce-abilities').innerHTML = ABIL.map(a => `
   <label class="field center" style="margin:0;">
-    <span>${ABIL_LABEL[a]}</span>
+    <span data-i18n="ce_ab_${a}">${ABIL_LABEL[a]}</span>
     <input type="number" id="ab-${a}" min="1" max="30" value="10">
     <b class="gold" id="mod-${a}">+0</b>
   </label>`).join('');
 ABIL.forEach(a => { abilInputs[a] = $('#ab-' + a); abilInputs[a].addEventListener('input', recalc); });
 
 $('#ce-saves').innerHTML = ABIL.map(a =>
-  `<label class="checkline"><input type="checkbox" id="sv-${a}"> ${ABIL_LABEL[a]}</label>`).join('');
+  `<label class="checkline"><input type="checkbox" id="sv-${a}"> <span data-i18n="ce_ab_${a}">${ABIL_LABEL[a]}</span></label>`).join('');
 
 $('#ce-skills').innerHTML = SKILLS.map(([id, ab]) => `
   <label class="row" style="gap:.4rem;">
     <select id="sk-${id}" style="width:auto;padding:.15rem .3rem;font-size:.78rem;">
       <option value="">—</option><option value="prof">prof</option><option value="expert">exp</option>
     </select>
-    <span>${SKILL_LABEL[id]} <span class="faint">(${ABIL_LABEL[ab]})</span> <b class="gold" id="skv-${id}"></b></span>
+    <span><span data-i18n="ce_sk_${id}">${SKILL_LABEL[id]}</span> <span class="faint">(<span data-i18n="ce_ab_${ab}">${ABIL_LABEL[ab]}</span>)</span> <b class="gold" id="skv-${id}"></b></span>
   </label>`).join('');
 SKILLS.forEach(([id]) => $('#' + 'sk-' + id).addEventListener('change', recalc));
 
@@ -201,8 +201,8 @@ function collect() {
 /* ---------- import ---------- */
 function afterImport(ch, src) {
   applyChar(ch);
-  $('#ce-import-status').innerHTML = `✅ Imported <b>${escapeHtml(ch.name)}</b> from ${escapeHtml(src)}.`;
-  toast(`Imported <b>${escapeHtml(ch.name)}</b> — review and save!`, 'ok');
+  $('#ce-import-status').innerHTML = '✅ ' + I18n.t('ce_imported', { name: escapeHtml(ch.name), src: escapeHtml(src) });
+  toast(I18n.t('ce_imported', { name: escapeHtml(ch.name), src: escapeHtml(src) }) + ' — ' + I18n.t('ce_review'), 'ok');
 }
 $('#ce-url-go').addEventListener('click', async () => {
   const url = $('#ce-url').value.trim();
@@ -215,7 +215,7 @@ $('#ce-url-go').addEventListener('click', async () => {
 $('#ce-file').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   try { afterImport(CharImport.normalize(JSON.parse(await f.text())), f.name); }
-  catch { toast('That file could not be parsed as character JSON.', 'err'); }
+  catch { toast(I18n.t('ce_jsonbad'), 'err'); }
 });
 
 /* ---------- save ---------- */
@@ -224,7 +224,7 @@ $('#ce-save').addEventListener('click', () => {
   const canVault = u && !u.guest;
   if (canVault && $('#ce-vault').checked) {
     Store.saveChar(ch);
-    toast(`<b>${escapeHtml(ch.name)}</b> saved to My Vault. ⚔️`, 'ok');
+    toast(I18n.t('ce_saved_vault', { name: escapeHtml(ch.name) }), 'ok');
   }
   if (returnTo === 'join') {
     localStorage.setItem('gc_char_draft', JSON.stringify(ch));
@@ -238,13 +238,14 @@ $('#ce-save').addEventListener('click', () => {
     return;
   }
   if (!canVault) {
-    toast('Guests can&rsquo;t keep a Vault — create a free account, or use this editor from a Join page to bring the hero into a room.', 'err', 6000);
+    toast(I18n.t('ce_guest_note'), 'err', 6000);
     return;
   }
   location.href = 'account.html';
 });
 
 /* ---------- boot ---------- */
+I18n.apply(document);
 if (!u || u.guest) { $('#ce-vault-wrap').classList.add('hidden'); }
 if (existing) applyChar(existing);
 recalc();

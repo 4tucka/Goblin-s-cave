@@ -31,15 +31,15 @@ function boot() {
     `);
     $$('.avatar-picker span', ov).forEach(s => s.addEventListener('click', () => {
       Auth.updateProfile({ avatar: s.dataset.av, avatarImg: null });
-      closeModal(); renderProfile(); toast('Avatar updated.', 'ok');
+      closeModal(); renderProfile(); toast(I18n.t('a_avatar_ok'), 'ok');
     }));
     $('#av-file', ov).addEventListener('change', async e => {
       const f = e.target.files[0]; if (!f) return;
       try {
         const data = await fileToScaledDataURL(f, 240);
         Auth.updateProfile({ avatarImg: data });
-        closeModal(); renderProfile(); toast('Portrait hung in the hall.', 'ok');
-      } catch { toast('That image could not be read.', 'err'); }
+        closeModal(); renderProfile(); toast(I18n.t('a_portrait_ok'), 'ok');
+      } catch { toast(I18n.t('a_imgbad'), 'err'); }
     });
   });
 
@@ -50,7 +50,7 @@ function boot() {
     const rec = Store.findUser(u.username);
     $('#profile-name').textContent = rec.username;
     $('#profile-avatar').innerHTML = rec.avatarImg ? `<img src="${rec.avatarImg}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--torch);">` : rec.avatar;
-    $('#profile-since').textContent = 'In the cave since ' + fmtDate(rec.createdAt);
+    $('#profile-since').textContent = I18n.t('a_since', { date: fmtDate(rec.createdAt) });
     const s = rec.stats || {};
     $('#stat-hosted').textContent = s.roomsHosted || 0;
     $('#stat-joined').textContent = s.roomsJoined || 0;
@@ -73,18 +73,18 @@ function boot() {
           </div>
           <div class="grow">
             <b>${escapeHtml(c.name)}</b><br>
-            <small>${escapeHtml(c.cls || 'Adventurer')} · Lv ${c.level || 1}</small><br>
+            <small>${escapeHtml(c.cls || I18n.t('p_role_pl'))} · Lv ${c.level || 1}</small><br>
             <span class="badge dim mt0" style="margin-top:.3rem;">❤️ ${c.hp}/${c.maxHp}</span>
             <span class="badge dim">🛡️ ${c.ac}</span>
           </div>
         </div>
         <div class="row mt1">
-          <button class="btn btn-sm" data-act="edit">Edit</button>
-          <button class="btn btn-sm btn-danger" data-act="del">Delete</button>
+          <button class="btn btn-sm" data-act="edit">${I18n.t('a_edit')}</button>
+          <button class="btn btn-sm btn-danger" data-act="del">${I18n.t('a_delete')}</button>
         </div>`;
       $('[data-act=edit]', el).addEventListener('click', () => { location.href = 'char-editor.html?edit=' + c.id; });
       $('[data-act=del]', el).addEventListener('click', () => {
-        if (confirm(`Send "${c.name}" off to retirement?`)) { Store.deleteChar(c.id); renderChars(); }
+        if (confirm(I18n.t('a_char_del_q', { name: c.name }))) { Store.deleteChar(c.id); renderChars(); }
       });
       grid.appendChild(el);
     }
@@ -101,17 +101,17 @@ function boot() {
       el.className = 'card';
       el.innerHTML = `
         <div style="height:90px;border-radius:8px;overflow:hidden;background:#0a0805;border:1px solid var(--line-soft);">
-          ${m.src ? `<img src="${m.src}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="display:grid;place-items:center;height:100%;color:var(--ink-faint);">Blank grid</div>'}
+          ${m.src ? `<img src="${m.src}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="display:grid;place-items:center;height:100%;color:var(--ink-faint);">${I18n.t('a_blank')}</div>`}
         </div>
         <b class="mt1" style="display:block;">${escapeHtml(m.name)}</b>
-        <small>${m.cols}×${m.rows} · ${m.grid === 'hex' ? 'hex' : 'square'} grid</small>
+        <small>${I18n.t('a_size', { c: m.cols, r: m.rows, g: I18n.t(m.grid === 'hex' ? 'a_grid_hex' : 'a_grid_square') })}</small>
         <div class="row mt1">
-          <button class="btn btn-sm" data-act="edit">🧰 Edit</button>
-          <button class="btn btn-sm btn-danger" data-act="del">Delete</button>
+          <button class="btn btn-sm" data-act="edit">🧰 ${I18n.t('a_edit')}</button>
+          <button class="btn btn-sm btn-danger" data-act="del">${I18n.t('a_delete')}</button>
         </div>`;
       $('[data-act=edit]', el).addEventListener('click', () => { location.href = 'map-editor.html?map=' + m.id; });
       $('[data-act=del]', el).addEventListener('click', () => {
-        if (confirm(`Burn the map "${m.name}"?`)) { Store.deleteMap(m.id); renderMaps(); }
+        if (confirm(I18n.t('a_map_del_q', { name: m.name }))) { Store.deleteMap(m.id); renderMaps(); }
       });
       grid.appendChild(el);
     }
@@ -131,12 +131,12 @@ function boot() {
         $$('.chip', box).forEach(x => x.classList.remove('active'));
         b.classList.add('active');
         Ambient.play({ kind: 'synth', id: p.id }, 0.5);
-        toast(`Now playing: <b>${p.name}</b> ${p.icon}`, 'ok');
+        toast(I18n.t('a_now_playing', { name: escapeHtml(p.name), icon: p.icon }), 'ok');
       });
       box.appendChild(b);
     }
     const stop = document.createElement('button');
-    stop.className = 'chip'; stop.innerHTML = '⏹️ Stop';
+    stop.className = 'chip'; stop.textContent = I18n.t('cr_stop');
     stop.addEventListener('click', () => { Ambient.stop(); $$('.chip', box).forEach(x => x.classList.remove('active')); });
     box.appendChild(stop);
   }
@@ -153,8 +153,8 @@ function boot() {
       el.innerHTML = `
         <div class="avatar">${h.role === 'host' ? '🕯️' : '🚪'}</div>
         <div class="grow">
-          <div class="name">${escapeHtml(h.name)} <span class="badge ${h.state === 'live' ? 'green' : 'dim'}">${h.state === 'live' ? 'live' : h.state}</span></div>
-          <div class="sub">${h.role === 'host' ? 'Hosted' : 'Joined'} · ${fmtDate(h.date)} · Party: ${escapeHtml((h.players || []).join(', ') || '—')}</div>
+          <div class="name">${escapeHtml(h.name)} <span class="badge ${h.state === 'live' ? 'green' : 'dim'}">${h.state === 'live' ? I18n.t('p_state_live') : h.state === 'lobby' ? I18n.t('a_state_lobby') : I18n.t('a_ended')}</span></div>
+          <div class="sub">${h.role === 'host' ? I18n.t('a_hosted_h') : I18n.t('a_joined_h')} · ${fmtDate(h.date)} · ${I18n.t('a_party')} ${escapeHtml((h.players || []).join(', ') || '—')}</div>
         </div>
         <span class="badge gold">${escapeHtml(h.code)}</span>`;
       list.appendChild(el);

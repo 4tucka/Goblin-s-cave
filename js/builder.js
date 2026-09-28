@@ -9,87 +9,89 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
 
   R.innerHTML = `
     <div class="row" style="margin-bottom:.6rem;">
-      <span class="dim">Base map:</span>
+      <span class="dim" data-i18n="b_base">Base map:</span>
       <button class="chip b-tpl active" data-tpl="cave">👺 Goblin Cave</button>
       <button class="chip b-tpl" data-tpl="dungeon">🏰 Stone Dungeon</button>
       <button class="chip b-tpl" data-tpl="tavern">🍺 Tavern</button>
       <button class="chip b-tpl" data-tpl="blank">⬛ Blank</button>
-      <label class="chip" style="cursor:pointer;">⬆️ Upload
+      <label class="chip" style="cursor:pointer;"><span data-i18n="b_upload">⬆️ Upload</span>
         <input type="file" class="b-upload" accept="image/*" style="display:none;"></label>
-      <select class="b-vault-load" style="width:auto;font-size:.82rem;"><option value="">📂 Load from Vault…</option></select>
+      <select class="b-vault-load" style="width:auto;font-size:.82rem;"><option value="" data-i18n="b_vault">📂 Load from Vault…</option></select>
       <div class="spacer"></div>
-      <button class="btn btn-sm b-export">⬇️ Export JSON</button>
-      <label class="btn btn-sm" style="cursor:pointer;">⬆️ Import JSON
+      <button class="btn btn-sm b-export" data-i18n="b_export">⬇️ Export JSON</button>
+      <label class="btn btn-sm" style="cursor:pointer;"><span data-i18n="b_import">⬆️ Import JSON</span>
         <input type="file" class="b-import" accept=".json,application/json" style="display:none;"></label>
-      ${owner ? '<button class="btn btn-sm b-save-vault">💾 Save to Vault</button>' : ''}
+      ${owner ? '<button class="btn btn-sm b-save-vault" data-i18n="b_save">💾 Save to Vault</button>' : ''}
     </div>
 
     <div class="tool-bar">
-      <button class="tool-btn" data-tool="pan" title="Drag to move around">✋ Pan</button>
-      <button class="tool-btn" data-tool="select" title="Select / move tokens, props, walls">👆 Select</button>
-      <button class="tool-btn" data-tool="token" title="Click an empty cell to place the selected NPC token">🎯 NPC token</button>
+      <button class="tool-btn" data-tool="pan" title="Drag to move around" data-i18n="b_pan">✋ Pan</button>
+      <button class="tool-btn" data-tool="select" title="Select / move tokens, props, walls" data-i18n="b_select">👆 Select</button>
+      <button class="tool-btn" data-tool="token" title="Click an empty cell to place the selected NPC token" data-i18n="b_token">🎯 NPC token</button>
       <select class="b-npc" style="width:auto;font-size:.8rem;"><option value="">— NPC —</option></select>
-      <button class="tool-btn" data-tool="prop" title="Place props (furniture, objects)">📦 Prop</button>
-      <button class="tool-btn" data-tool="wall" title="Drag to draw a wall segment">🧱 Wall</button>
-      <button class="tool-btn" data-tool="label" title="Click to place a text label">🏷️ Label</button>
+      <button class="tool-btn" data-tool="prop" title="Place props (furniture, objects)" data-i18n="b_prop">📦 Prop</button>
+      <button class="tool-btn" data-tool="wall" title="Drag to draw a wall segment" data-i18n="b_wall">🧱 Wall</button>
+      <button class="tool-btn" data-tool="label" title="Click to place a text label" data-i18n="b_label">🏷️ Label</button>
       <span class="tool-sep"></span>
-      <button class="tool-btn" data-tool="terrain">🎨 Terrain</button>
-      <button class="tool-btn" data-tool="region" title="Drag a rectangle to fill terrain">▧ Region fill</button>
-      <button class="tool-btn" data-tool="eraser">🧽 Erase</button>
+      <button class="tool-btn" data-tool="terrain" data-i18n="b_terrain">🎨 Terrain</button>
+      <button class="tool-btn" data-tool="region" title="Drag a rectangle to fill terrain" data-i18n="b_region">▧ Region fill</button>
+      <button class="tool-btn" data-tool="eraser" data-i18n="b_eraser">🧽 Erase</button>
       <span class="tool-sep"></span>
-      <button class="tool-btn" data-tool="fog">🌫️ Fog</button>
-      <button class="tool-btn" data-tool="unfog">☀️ Reveal</button>
+      <button class="tool-btn" data-tool="fog" data-i18n="b_fog">🌫️ Fog</button>
+      <button class="tool-btn" data-tool="unfog" data-i18n="b_reveal">☀️ Reveal</button>
     </div>
     <div class="tool-bar">
       <span class="b-swatches row" style="gap:.25rem;"></span>
       <span class="tool-sep"></span>
-      <span class="dim" style="font-size:.78rem;">Prop:</span>
+      <span class="dim" style="font-size:.78rem;" data-i18n="b_prop_l">Prop:</span>
       <select class="b-prop" style="width:auto;font-size:.95rem;">${PROP_EMOJIS.map(p => `<option>${p}</option>`).join('')}</select>
-      <label class="dim" style="font-size:.78rem;">size <input type="range" class="b-prop-size" min="0.5" max="3" step="0.25" value="1" style="width:90px;"></label>
+      <label class="dim" style="font-size:.78rem;"><span data-i18n="b_size">size</span> <input type="range" class="b-prop-size" min="0.5" max="3" step="0.25" value="1" style="width:90px;"></label>
       <span class="tool-sep"></span>
       <button class="tool-btn b-undo" title="Undo (Ctrl+Z)">↩️</button>
       <button class="tool-btn b-redo" title="Redo (Ctrl+Y)">↪️</button>
       <span class="tool-sep"></span>
       <button class="tool-btn b-zin">＋</button>
       <button class="tool-btn b-zout">－</button>
-      <button class="tool-btn b-zfit">⤢ Fit</button>
+      <button class="tool-btn b-zfit" data-i18n="p_fit">⤢ Fit</button>
       <span class="tool-sep"></span>
-      <button class="tool-btn b-clear-terrain">Clear terrain</button>
-      <button class="tool-btn b-clear-fog">Clear fog</button>
-      <button class="tool-btn b-clear-objs">Clear props/walls/labels</button>
+      <button class="tool-btn b-clear-terrain" data-i18n="b_clr_t">Clear terrain</button>
+      <button class="tool-btn b-clear-fog" data-i18n="b_clr_f">Clear fog</button>
+      <button class="tool-btn b-clear-objs" data-i18n="b_clr_o">Clear props/walls/labels</button>
     </div>
 
     <div class="canvas-frame" style="height:480px;"><canvas class="b-canvas"></canvas></div>
 
     <div class="grid cols-2 mt2">
       <div class="card">
-        <h3 class="mt0">Grid &amp; canvas</h3>
+        <h3 class="mt0" data-i18n="b_grid_h">Grid &amp; canvas</h3>
         <div class="row">
-          <button class="chip b-grid active" data-grid="square">▦ Square</button>
-          <button class="chip b-grid" data-grid="hex">⬡ Hex</button>
+          <button class="chip b-grid active" data-grid="square" data-i18n="b_square">▦ Square</button>
+          <button class="chip b-grid" data-grid="hex" data-i18n="b_hex">⬡ Hex</button>
         </div>
         <div class="inline-grid mt1">
-          <label class="field"><span>Columns</span><input type="number" class="b-cols" min="6" max="60" value="${state.map.cols}"></label>
-          <label class="field"><span>Rows</span><input type="number" class="b-rows" min="6" max="40" value="${state.map.rows}"></label>
+          <label class="field"><span data-i18n="b_cols">Columns</span><input type="number" class="b-cols" min="6" max="60" value="${state.map.cols}"></label>
+          <label class="field"><span data-i18n="b_rows">Rows</span><input type="number" class="b-rows" min="6" max="40" value="${state.map.rows}"></label>
         </div>
-        <label class="field"><span>Cell size: <b class="b-cs-val">${state.map.cs}</b>px</span>
+        <label class="field"><span><span data-i18n="b_cell">Cell size:</span> <b class="b-cs-val">${state.map.cs}</b>px</span>
           <input type="range" class="b-cs" min="28" max="90" value="${state.map.cs}"></label>
       </div>
       <div class="card">
-        <h3 class="mt0">Selected object</h3>
-        <div class="dim b-sel-empty">Click 🎯 tokens, 📦 props or 🧱 walls with the <b>Select</b> tool.</div>
+        <h3 class="mt0" data-i18n="b_sel_h">Selected object</h3>
+        <div class="dim b-sel-empty" data-i18n="b_sel_e">Click 🎯 tokens, 📦 props or 🧱 walls with the <b>Select</b> tool.</div>
         <div class="b-sel hidden">
           <div class="row"><b class="b-sel-title"></b><span class="badge dim b-sel-kind"></span></div>
-          <label class="field mt1 b-sel-name-wrap"><span>Label / name</span><input type="text" class="b-sel-name"></label>
-          <label class="field"><span class="b-sel-size-lbl">Scale</span>
+          <label class="field mt1 b-sel-name-wrap"><span data-i18n="b_name">Label / name</span><input type="text" class="b-sel-name"></label>
+          <label class="field"><span class="b-sel-size-lbl" data-i18n="b_scale">Scale</span>
             <input type="range" class="b-sel-size" min="0.5" max="4" step="0.25" value="1"></label>
           <div class="row">
-            <button class="btn btn-sm b-sel-dup">⧉ Duplicate</button>
-            <button class="btn btn-sm btn-danger b-sel-del">🗑 Delete</button>
+            <button class="btn btn-sm b-sel-dup" data-i18n="b_dup">⧉ Duplicate</button>
+            <button class="btn btn-sm btn-danger b-sel-del" data-i18n="b_del">🗑 Delete</button>
           </div>
         </div>
       </div>
     </div>`;
+
+  I18n.apply(R);
 
   const TEMPLATES = {
     cave: 'assets/map-cave.jpg', dungeon: 'assets/map-dungeon.jpg',
@@ -191,8 +193,8 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
       state.map.src = await fileToScaledDataURL(f, 1400, 0.82);
       $$('.b-tpl', R).forEach(x => x.classList.remove('active'));
       mc.render();
-      toast('Custom map unfurled on the table.', 'ok');
-    } catch { toast('Could not read that image.', 'err'); }
+      toast(I18n.t('b_custom_ok'), 'ok');
+    } catch { toast(I18n.t('j_imgbad'), 'err'); }
   });
 
   /* grid settings */
@@ -218,7 +220,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
   /* npc options for token placement */
   function setNpcOptions() {
     const sel = $('.b-npc', R);
-    sel.innerHTML = '<option value="">— NPC —</option>' +
+    sel.innerHTML = `<option value="">${I18n.t('b_npc_ph')}</option>` +
       getNpcList().map(n => `<option value="${n.id}">${n.icon} ${escapeHtml(n.name)}</option>`).join('');
     sel.value = npcId;
   }
@@ -235,7 +237,9 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
     $('.b-sel-title', R).textContent = o.icon ? `${o.icon} ` : '';
     $('.b-sel-name', R).value = o.name || o.text || '';
     const isWall = selected.kind === 'wall';
-    $('.b-sel-size-lbl', R).textContent = isWall ? 'Thickness' : 'Scale / size';
+    const szl = $('.b-sel-size-lbl', R);
+    szl.dataset.i18n = isWall ? 'b_thick' : 'b_scale_size';
+    szl.textContent = I18n.t(szl.dataset.i18n);
     $('.b-sel-size', R).value = isWall ? (o.w || 0.2) * 4 : (o.size || o.scale || 1);
     $('.b-sel-size', R).min = isWall ? 0.5 : 0.25;
     $('.b-sel-size', R).max = isWall ? 3 : 4;
@@ -294,7 +298,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
       }
       case 'placeToken': {
         const npc = getNpcList().find(n => n.id === npcId);
-        if (!npc) return toast('Pick which NPC to place (dropdown next to 🎯).', 'err');
+        if (!npc) return toast(I18n.t('b_pick_npc'), 'err');
         const t = makeNpcToken(npc, p.col, p.row);
         state.tokens.push(t);
         selected = { kind: 'token', ref: t }; renderSel(); commit(); mc.render(); break;
@@ -311,7 +315,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
         selected = { kind: 'wall', ref: wl }; renderSel(); commit(); mc.render(); break;
       }
       case 'labelAt': {
-        const text = prompt('Label text:', 'The Crypt');
+        const text = prompt(I18n.t('b_label_q'), 'The Crypt');
         if (!text) return;
         state.labels.push({ id: uid(), text, x: p.x, y: p.y, size: 0.5, color: null });  /* null = follow theme accent */
         commit(); mc.render(); break;
@@ -343,15 +347,15 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
     a.href = URL.createObjectURL(blob);
     a.download = (state.name || 'battlemap').replace(/\W+/g, '-') + '.json';
     a.click();
-    toast('Map exported as JSON.', 'ok');
+    toast(I18n.t('b_exported'), 'ok');
   });
   $('.b-import', R).addEventListener('change', async e => {
     const f = e.target.files[0]; if (!f) return;
     try {
       const o = JSON.parse(await f.text());
       applySerialized(o);
-      toast('Map imported. 🗺️', 'ok');
-    } catch { toast('That JSON could not be parsed as a map.', 'err'); }
+      toast(I18n.t('b_imported'), 'ok');
+    } catch { toast(I18n.t('b_jsonbad'), 'err'); }
   });
   function applySerialized(o) {
     if (!o || !o.map) throw new Error('not a map');
@@ -372,7 +376,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
   /* ---------- vault ---------- */
   function refreshVault() {
     const sel = $('.b-vault-load', R);
-    sel.innerHTML = '<option value="">📂 Load from Vault…</option>';
+    sel.innerHTML = '<option value="" data-i18n="b_vault">📂 Load from Vault…</option>';
     if (!owner) return;
     for (const m of Store.maps().filter(m => m.owner === owner)) {
       const o = document.createElement('option');
@@ -385,16 +389,16 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
     if (!m) return;
     applySerialized({ map: { kind: 'vault', src: m.src, cols: m.cols, rows: m.rows, grid: m.grid, cs: state.map.cs },
       terrain: m.terrain, fog: m.fog, tokens: m.tokens, props: m.props, walls: m.walls, labels: m.labels });
-    toast(`Loaded <b>${escapeHtml(m.name)}</b> from the Vault.`, 'ok');
+    toast(I18n.t('b_loaded', { name: escapeHtml(m.name) }), 'ok');
   });
   const saveBtn = $('.b-save-vault', R);
   if (saveBtn) saveBtn.addEventListener('click', () => {
-    const name = prompt('Name this map:', state.name || 'My Battlemap') || 'My Battlemap';
+    const name = prompt(I18n.t('b_name_q'), state.name || I18n.t('b_default_name')) || I18n.t('b_default_name');
     const ok = Store.saveMap({ id: state.vaultId || uid(), owner, name,
       src: state.map.src, cols: state.map.cols, rows: state.map.rows, grid: state.map.grid,
       terrain: state.terrain, fog: [...state.fog], tokens: state.tokens,
       props: state.props, walls: state.walls, labels: state.labels });
-    toast(ok ? 'Map saved to My Vault. 🗺️' : 'Storage is full — delete old maps first.', ok ? 'ok' : 'err');
+    toast(ok ? I18n.t('b_saved_vault') : I18n.t('b_storage_full'), ok ? 'ok' : 'err');
   });
 
   refreshVault();

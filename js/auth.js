@@ -19,9 +19,9 @@ const Auth = (() => {
 
   function signup(username, password) {
     username = String(username || '').trim();
-    if (username.length < 3) return { error: 'Name needs at least 3 characters.' };
-    if (String(password || '').length < 4) return { error: 'Password needs at least 4 characters.' };
-    if (Store.findUser(username)) return { error: 'That adventurer name is already taken.' };
+    if (username.length < 3) return { error: I18n.t('e_short_name') };
+    if (String(password || '').length < 4) return { error: I18n.t('e_short_pass') };
+    if (Store.findUser(username)) return { error: I18n.t('e_taken') };
     const user = {
       id: uid(), username, hash: hash(password),
       avatar: '🧙', avatarImg: null, createdAt: Date.now(),
@@ -34,7 +34,7 @@ const Auth = (() => {
 
   function login(username, password) {
     const u = Store.findUser(username);
-    if (!u || u.hash !== hash(password)) return { error: 'Wrong name or password, adventurer.' };
+    if (!u || u.hash !== hash(password)) return { error: I18n.t('e_badlogin') };
     Store.set(Store.K.session, { username: u.username });
     return { user: u };
   }

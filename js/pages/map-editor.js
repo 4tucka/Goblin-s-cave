@@ -6,9 +6,9 @@ const u = Auth.currentUser();
 if (!u || u.guest) {
   document.querySelector('main').innerHTML = `
     <div class="panel center" style="max-width:520px;margin:6vh auto;">
-      <h2>🔒 The drafting table is for signed-in cartographers</h2>
-      <p class="dim">Sign in to build and keep maps in your Vault.</p>
-      <a class="btn btn-primary" href="index.html#auth">Log in / Sign up</a>
+      <h2>${I18n.t('me_gate_h')}</h2>
+      <p class="dim">${I18n.t('me_gate_p')}</p>
+      <a class="btn btn-primary" href="index.html#auth">${I18n.t('a_gate_btn')}</a>
     </div>`;
 } else {
   boot();
@@ -22,7 +22,7 @@ function boot() {
 
   if (backTo === 'create') {
     $('#ed-back').href = 'create.html';
-    $('#ed-back').textContent = '← Back to room wizard';
+    $('#ed-back').textContent = I18n.t('ce_back_npc');
   }
 
   const state = {
@@ -42,7 +42,7 @@ function boot() {
     labels: existing?.labels || [],
   };
 
-  $('#ed-status').textContent = existing ? `Editing “${existing.name}”` : 'New map (unsaved)';
+  $('#ed-status').textContent = existing ? I18n.t('me_editing', { name: existing.name }) : I18n.t('me_new');
 
   const bld = initBuilder({ root: '#builder-root', state, owner: u.username, getNpcList: () => [] });
 
