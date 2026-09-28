@@ -221,7 +221,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
   function setNpcOptions() {
     const sel = $('.b-npc', R);
     sel.innerHTML = `<option value="">${I18n.t('b_npc_ph')}</option>` +
-      getNpcList().map(n => `<option value="${n.id}">${n.icon} ${escapeHtml(n.name)}</option>`).join('');
+      getNpcList().map(n => `<option value="${n.id}">${isImgIcon(n.icon) ? '' : n.icon + ' '}${escapeHtml(n.name)}</option>`).join('');
     sel.value = npcId;
   }
   $('.b-npc', R).addEventListener('change', e => { npcId = e.target.value; });
@@ -234,7 +234,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
     if (!selected) return;
     const o = selected.ref;
     $('.b-sel-kind', R).textContent = selected.kind;
-    $('.b-sel-title', R).textContent = o.icon ? `${o.icon} ` : '';
+    $('.b-sel-title', R).textContent = (o.icon && !isImgIcon(o.icon)) ? `${o.icon} ` : '';
     $('.b-sel-name', R).value = o.name || o.text || '';
     const isWall = selected.kind === 'wall';
     const szl = $('.b-sel-size-lbl', R);

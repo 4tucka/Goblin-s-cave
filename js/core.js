@@ -1,6 +1,28 @@
 /* core.js — tiny utilities shared by all pages */
-const TOKEN_EMOJIS = ['🧝','🧙','🧔','👸','🥷','🧑‍🌾','🦹','🧛','🐺','👺','👹','🐉','🦂','🕷️','🐍','🦇','💀','👻','🗿','🌳','🐗','🦎','🐲','🛡️'];
-const AVATARS = ['🧙','⚔️','🛡️','🏹','🗡️','🐉','🦉','🐺','🔥','👺','🧝','🧛','💀','🎲','🕯️','🌙','🍄','🪓'];
+/* Advanced fantasy icons (game-icons.net, CC BY 3.0 — Lorc & Delapouite) */
+const TOKEN_ICONS = ['goblin','orc','wolf','direwolf','dragon','imp','beholder','cultist','reaper','demon','skeleton','undead','beast','spider','bat','serpent','cobra','hydra','harpy','minotaur','lizardfolk','werewolf','vampire','ghost','witch','owl','raven','cat','horse','fairy','myconid','wizard','barbarian','archer','knight','rogue','bard','guard']
+  .map(n => `assets/icons/${n}.svg`);
+const TOKEN_EMOJIS = TOKEN_ICONS; // legacy name — now SVG paths
+const AVATARS = ['wizard','barbarian','knight','rogue','crown','shadow','dice','lantern','key','treasure','gold','castle','candles','tome','sword','swords','axe','wand','shield','relic','raven','wolf','dragon','owl','cat','fairy','ghost']
+  .map(n => `assets/icons/${n}.svg`);
+const isImgIcon = v => typeof v === 'string' && v.indexOf('assets/icons/') === 0;
+const iconHtml = (icon, cls = 'icon-img') => isImgIcon(icon) ? `<img class="${cls}" src="${icon}" alt="">` : `<span>${icon || '🎭'}</span>`;
+/* chooseable profile titles */
+const TITLES = [
+  { id: 'adventurer',     icon: 'assets/icons/sword.svg',    key: 't_adventurer' },
+  { id: 'dungeon-master', icon: 'assets/icons/lantern.svg',  key: 't_dm' },
+  { id: 'monster-slayer', icon: 'assets/icons/swords.svg',   key: 't_slayer' },
+  { id: 'loremaster',     icon: 'assets/icons/tome.svg',     key: 't_lore' },
+  { id: 'cartographer',   icon: 'assets/icons/castle.svg',   key: 't_carto' },
+  { id: 'treasure-hunter',icon: 'assets/icons/treasure.svg', key: 't_hunter' },
+  { id: 'spellweaver',    icon: 'assets/icons/wand.svg',     key: 't_spell' },
+  { id: 'goblin-bane',    icon: 'assets/icons/goblin.svg',   key: 't_bane' },
+  { id: 'tavern-keeper',  icon: 'assets/icons/candles.svg',  key: 't_tavern' },
+  { id: 'shadow-walker',  icon: 'assets/icons/shadow.svg',   key: 't_shadow' },
+  { id: 'dragon-kin',     icon: 'assets/icons/dragon.svg',   key: 't_dragon' },
+  { id: 'oathkeeper',     icon: 'assets/icons/shield.svg',   key: 't_oath' },
+];
+const titleOf = id => TITLES.find(t => t.id === id) || TITLES[0];
 const TERRAIN_SWATCHES = [
   { name: 'Water',   c: 'rgba(46,109,246,.55)' },
   { name: 'Forest',  c: 'rgba(52,128,60,.6)' },
@@ -180,7 +202,7 @@ function renderHeader(active = '') {
     </select>
     ${u ? `
       <div class="user-chip" id="user-chip" title="${u.guest ? 'Playing as guest' : 'Account'}">
-        <div class="avatar">${u.avatarImg ? `<img src="${u.avatarImg}">` : (u.avatar || '👤')}</div>
+        <div class="avatar">${u.avatarImg ? `<img src="${u.avatarImg}">` : (isImgIcon(u.avatar) ? iconHtml(u.avatar) : (u.avatar || '👤'))}</div>
         <span>${escapeHtml(u.name || u.username)}</span>
         ${u.guest ? '<span class="badge dim">Guest</span>' : ''}
       </div>` : `
@@ -255,7 +277,7 @@ function toggleThemePop() {
 function renderFooter() {
   const f = document.createElement('footer');
   f.className = 'footer';
-  f.innerHTML = `🕯️ <b>Goblin&rsquo;s Cave</b> — a fan-made virtual tabletop for D&amp;D adventurers. Not affiliated with Wizards of the Coast.`;
+  f.innerHTML = `🕯️ <b>Goblin&rsquo;s Cave</b> — a fan-made virtual tabletop for D&amp;D adventurers. Not affiliated with Wizards of the Coast. · Icons by <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a> (Lorc &amp; Delapouite, CC BY 3.0).`;
   document.body.appendChild(f);
 }
 

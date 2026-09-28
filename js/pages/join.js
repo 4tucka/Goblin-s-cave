@@ -14,19 +14,20 @@ let myReady = false;
 let importedChar = null; // full object from advanced editor / web import
 
 /* token emoji picker */
-let chEmoji = '🧝', chImg = null;
+let chEmoji = 'assets/icons/barbarian.svg', chImg = null;
 const em = $('#ch-emojis');
 TOKEN_EMOJIS.forEach((e, i) => {
   const s = document.createElement('span');
-  s.textContent = e;
+  s.innerHTML = iconHtml(e);
   if (e === chEmoji) s.classList.add('active');
   s.addEventListener('click', () => {
     chEmoji = e; chImg = null;
     $$('#ch-emojis span').forEach(x => x.classList.toggle('active', x === s));
-    $('#ch-preview').textContent = e;
+    $('#ch-preview').innerHTML = iconHtml(e);
   });
   em.appendChild(s);
 });
+$('#ch-preview').innerHTML = iconHtml(chEmoji);
 $('#ch-img').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   try {

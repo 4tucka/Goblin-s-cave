@@ -137,7 +137,7 @@ function boot() {
     const panel = $('#token-panel');
     if (!t) { panel.classList.add('hidden'); return; }
     panel.classList.remove('hidden');
-    $('#tp-name').textContent = `${t.icon || ''} ${t.name}`;
+    $('#tp-name').innerHTML = `${iconHtml(t.icon)} ${escapeHtml(t.name)}`;
     $('#tp-kind').textContent = t.owner === 'dm' ? I18n.t('p_kind_npc') : I18n.t('p_kind_pl');
     $('#tp-hp').textContent = t.maxHp > 0 ? `${t.hp}/${t.maxHp}` : '—';
     $('#tp-ac').textContent = t.ac ? `🛡️ ${I18n.t('cr_ac')} ${t.ac}` : '';
@@ -183,7 +183,7 @@ function boot() {
       if (!t) return;
       const el = document.createElement('div');
       el.className = 'init-card' + (i === (room.turnIdx || 0) ? ' current' : '');
-      el.innerHTML = `<div class="icon">${t.icon || '❓'}</div>
+      el.innerHTML = `<div class="icon">${iconHtml(t.icon)}</div>
         <div class="nm">${escapeHtml(t.name)}</div>
         <div class="iv">init ${e.init}</div>
         ${t.maxHp > 0 ? `<div class="hp-line"><i style="width:${clamp(t.hp / t.maxHp * 100, 0, 100)}%"></i></div>` : ''}`;
@@ -220,7 +220,7 @@ function boot() {
     const rows = room.tokens.map(t => {
       const entry = room.initiative.find(e => e.tokenId === t.id);
       return `<div class="row" style="margin-bottom:.5rem;">
-        <span style="width:150px;">${t.icon || ''} ${escapeHtml(t.name)}</span>
+        <span style="width:150px;">${iconHtml(t.icon)} ${escapeHtml(t.name)}</span>
         <input type="checkbox" data-inc="${t.id}" ${entry ? 'checked' : ''}>
         <input type="number" data-init="${t.id}" value="${entry ? entry.init : Dice.rollDie(20)}" style="width:80px;">
       </div>`;
@@ -369,7 +369,7 @@ function boot() {
           : '<span class="badge red" title="Hostile">⚔️</span>';
         const row = document.createElement('div');
         row.className = 'player-row';
-        row.innerHTML = `<div class="avatar">${t.icon || '👹'}</div>
+        row.innerHTML = `<div class="avatar">${iconHtml(t.icon)}</div>
           <div class="grow"><div class="name">${escapeHtml(t.name)} ${st}</div>
           <div class="sub">❤️ ${t.hp}/${t.maxHp} · 🛡️ ${t.ac}</div></div>`;
         box.appendChild(row);

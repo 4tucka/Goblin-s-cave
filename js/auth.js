@@ -11,10 +11,10 @@ const Auth = (() => {
   function currentUser() {
     const s = Store.get(Store.K.session, null);
     if (!s) return null;
-    if (s.guest) return { guest: true, id: s.id, name: s.name, avatar: '🎭' };
+    if (s.guest) return { guest: true, id: s.id, name: s.name, avatar: '🎭', title: 'adventurer', bio: '' };
     const u = Store.findUser(s.username);
     if (!u) return null;
-    return { guest: false, id: u.id, username: u.username, name: u.username, avatar: u.avatar, avatarImg: u.avatarImg, createdAt: u.createdAt };
+    return { guest: false, id: u.id, username: u.username, name: u.username, avatar: u.avatar, avatarImg: u.avatarImg, createdAt: u.createdAt, title: u.title || 'adventurer', bio: u.bio || '' };
   }
 
   function signup(username, password) {
@@ -24,7 +24,7 @@ const Auth = (() => {
     if (Store.findUser(username)) return { error: I18n.t('e_taken') };
     const user = {
       id: uid(), username, hash: hash(password),
-      avatar: '🧙', avatarImg: null, createdAt: Date.now(),
+      avatar: 'assets/icons/wizard.svg', avatarImg: null, createdAt: Date.now(), title: 'adventurer', bio: '',
       stats: { roomsHosted: 0, roomsJoined: 0, diceRolled: 0 },
     };
     Store.saveUser(user);

@@ -179,11 +179,11 @@ $('#open-map-editor').addEventListener('click', e => {
 /* ============================================================
    STEP 3 — NPC spawner
 ============================================================ */
-let npcIcon = '👺';
+let npcIcon = 'assets/icons/goblin.svg';
 const nic = $('#n-icons');
 TOKEN_EMOJIS.slice(0, 16).forEach((e, i) => {
   const s = document.createElement('span');
-  s.textContent = e; s.dataset.e = e;
+  s.innerHTML = iconHtml(e); s.dataset.e = e;
   if (i === 0) s.classList.add('active');
   s.addEventListener('click', () => {
     npcIcon = e;
@@ -193,18 +193,18 @@ TOKEN_EMOJIS.slice(0, 16).forEach((e, i) => {
 });
 
 const NPC_DEFAULTS = {
-  Goblin: { hp: 7, ac: 13, icon: '👺', atk: 'Scimitar +4 — 1d6+2 slashing' },
-  Hobgoblin: { hp: 11, ac: 18, icon: '👹', atk: 'Longsword +3 — 1d8+1 slashing' },
-  Bugbear: { hp: 27, ac: 16, icon: '🐻', atk: 'Morningstar +4 — 2d8+2 piercing' },
-  Skeleton: { hp: 13, ac: 13, icon: '💀', atk: 'Shortsword +4 — 1d6+2 piercing' },
-  Zombie: { hp: 22, ac: 8, icon: '🧟', atk: 'Slam +3 — 1d6+1 bludgeoning' },
-  Wolf: { hp: 11, ac: 13, icon: '🐺', atk: 'Bite +4 — 2d4+2 piercing' },
-  'Giant Spider': { hp: 26, ac: 14, icon: '🕷️', atk: 'Bite +5 — 1d8+3 + poison' },
-  Ogre: { hp: 59, ac: 11, icon: '🧌', atk: 'Greatclub +6 — 2d8+4 bludgeoning' },
-  Cultist: { hp: 9, ac: 12, icon: '🥷', atk: 'Scimitar +3 — 1d6+1 slashing' },
-  Kobold: { hp: 5, ac: 12, icon: '🦎', atk: 'Dagger +4 — 1d4+2 piercing' },
-  Orc: { hp: 15, ac: 13, icon: '🗿', atk: 'Greataxe +5 — 1d12+3 slashing' },
-  Custom: { hp: 10, ac: 12, icon: '❓', atk: 'Improvised +2 — 1d4' },
+  Goblin: { hp: 7, ac: 13, icon: 'assets/icons/goblin.svg', atk: 'Scimitar +4 — 1d6+2 slashing' },
+  Hobgoblin: { hp: 11, ac: 18, icon: 'assets/icons/guard.svg', atk: 'Longsword +3 — 1d8+1 slashing' },
+  Bugbear: { hp: 27, ac: 16, icon: 'assets/icons/beast.svg', atk: 'Morningstar +4 — 2d8+2 piercing' },
+  Skeleton: { hp: 13, ac: 13, icon: 'assets/icons/skeleton.svg', atk: 'Shortsword +4 — 1d6+2 piercing' },
+  Zombie: { hp: 22, ac: 8, icon: 'assets/icons/undead.svg', atk: 'Slam +3 — 1d6+1 bludgeoning' },
+  Wolf: { hp: 11, ac: 13, icon: 'assets/icons/wolf.svg', atk: 'Bite +4 — 2d4+2 piercing' },
+  'Giant Spider': { hp: 26, ac: 14, icon: 'assets/icons/spider.svg', atk: 'Bite +5 — 1d8+3 + poison' },
+  Ogre: { hp: 59, ac: 11, icon: 'assets/icons/minotaur.svg', atk: 'Greatclub +6 — 2d8+4 bludgeoning' },
+  Cultist: { hp: 9, ac: 12, icon: 'assets/icons/cultist.svg', atk: 'Scimitar +3 — 1d6+1 slashing' },
+  Kobold: { hp: 5, ac: 12, icon: 'assets/icons/lizardfolk.svg', atk: 'Dagger +4 — 1d4+2 piercing' },
+  Orc: { hp: 15, ac: 13, icon: 'assets/icons/orc.svg', atk: 'Greataxe +5 — 1d12+3 slashing' },
+  Custom: { hp: 10, ac: 12, icon: 'assets/icons/shadow.svg', atk: 'Improvised +2 — 1d4' },
 };
 $('#n-type').addEventListener('change', () => {
   const d = NPC_DEFAULTS[$('#n-type').value];
@@ -251,7 +251,7 @@ function addNpc(n, quiet = false) {
   draft.npcs.push(n);
   renderNpcList(); bld && bld.setNpcOptions();
   $('#n-name').value = '';
-  if (!quiet) toast(I18n.t('cr_joins', { name: escapeHtml(n.name) }) + ' ' + n.icon, 'ok');
+  if (!quiet) toast(I18n.t('cr_joins', { name: escapeHtml(n.name) }) + ' ' + iconHtml(n.icon), 'ok');
 }
 
 $('#n-import').addEventListener('click', () => {
@@ -282,7 +282,7 @@ function renderNpcList() {
     const row = document.createElement('div');
     row.className = 'player-row';
     row.innerHTML = `
-      <div class="avatar">${n.icon}</div>
+      <div class="avatar">${iconHtml(n.icon)}</div>
       <div class="grow">
         <div class="name">${escapeHtml(n.name)} <span class="badge dim">${escapeHtml(n.type)}</span> ${stanceBadge(n)}</div>
         <div class="sub">HP ${n.hp} · AC ${n.ac}${n.atk ? ' · ' + escapeHtml(n.atk) : ''}</div>
@@ -405,7 +405,7 @@ function renderLobby() {
     row.className = 'player-row';
     const ch = p.character || {};
     row.innerHTML = `
-      <div class="avatar">${ch.tokenImg ? `<img src="${ch.tokenImg}">` : (ch.tokenEmoji || '🎭')}</div>
+      <div class="avatar">${ch.tokenImg ? `<img src="${ch.tokenImg}">` : iconHtml(ch.tokenEmoji)}</div>
       <div class="grow">
         <div class="name">${escapeHtml(p.name)} ${p.guest ? `<span class="badge dim">${I18n.t('cr_guest')}</span>` : ''}</div>
         <div class="sub">${escapeHtml(ch.name || I18n.t('cr_nochar'))} — ${escapeHtml(ch.cls || '?')} Lv ${ch.level || 1} · ❤️ ${ch.hp}/${ch.maxHp} · 🛡️ ${ch.ac}</div>

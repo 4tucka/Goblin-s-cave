@@ -25,7 +25,7 @@ function boot() {
     const ov = openModal(`
       <div class="modal-head"><h3>Choose your face</h3><button class="modal-x">✕</button></div>
       <div class="avatar-picker">${AVATARS.map(a =>
-        `<span data-av="${a}" class="${rec.avatar === a && !rec.avatarImg ? 'active' : ''}">${a}</span>`).join('')}</div>
+        `<span data-av="${a}" class="${rec.avatar === a && !rec.avatarImg ? 'active' : ''}">${iconHtml(a)}</span>`).join('')}</div>
       <label class="field mt2"><span>…or upload a portrait</span>
         <input type="file" id="av-file" accept="image/*"></label>
     `);
@@ -43,13 +43,44 @@ function boot() {
     });
   });
 
+  /* ---------- title & bio ---------- */
+  $('#edit-profile').addEventListener('click', () => {
+    const rec = Store.findUser(u.username);
+    const ov = openModal(`
+      <div class="modal-head"><h3>${I18n.t('a_edit_profile')}</h3><button class="modal-x">✕</button></div>
+      <label class="field"><span>${I18n.t('a_title')}</span>
+        <div class="title-grid">${TITLES.map(t =>
+          `<div class="tile${t.id === (rec.title || 'adventurer') ? ' active' : ''}" data-t="${t.id}">${iconHtml(t.icon)}<span>${escapeHtml(I18n.t(t.key))}</span></div>`).join('')}</div>
+      </label>
+      <label class="field mt1"><span>${I18n.t('a_bio')}</span>
+        <textarea id="bio-input" rows="4" maxlength="280" style="width:100%;" placeholder="${I18n.t('a_bio_ph')}">${escapeHtml(rec.bio || '')}</textarea>
+      </label>
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+        <button class="btn btn-gold" id="save-profile">${I18n.t('a_save_profile')}</button>
+      </div>
+    `);
+    let sel = rec.title || 'adventurer';
+    $$('.title-grid .tile', ov).forEach(tl => tl.addEventListener('click', () => {
+      sel = tl.dataset.t;
+      $$('.title-grid .tile', ov).forEach(x => x.classList.toggle('active', x === tl));
+    }));
+    $('#save-profile', ov).addEventListener('click', () => {
+      Auth.updateProfile({ title: sel, bio: $('#bio-input', ov).value.trim() });
+      closeModal(); renderProfile(); toast(I18n.t('a_profile_saved'), 'ok');
+    });
+  });
+
   /* ---------- characters ---------- */
   
 
   function renderProfile() {
     const rec = Store.findUser(u.username);
     $('#profile-name').textContent = rec.username;
-    $('#profile-avatar').innerHTML = rec.avatarImg ? `<img src="${rec.avatarImg}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--torch);">` : rec.avatar;
+    $('#profile-avatar').innerHTML = rec.avatarImg ? `<img src="${rec.avatarImg}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--torch);">` : iconHtml(rec.avatar || '👤');
+    const tt = titleOf(rec.title || 'adventurer');
+    const tb = $('#profile-title');
+    tb.innerHTML = `${iconHtml(tt.icon)} <span data-i18n="${tt.key}">${escapeHtml(I18n.t(tt.key))}</span>`;
+    $('#profile-bio').textContent = rec.bio || I18n.t('a_bio_ph');
     $('#profile-since').textContent = I18n.t('a_since', { date: fmtDate(rec.createdAt) });
     const s = rec.stats || {};
     $('#stat-hosted').textContent = s.roomsHosted || 0;
@@ -69,7 +100,7 @@ function boot() {
       el.innerHTML = `
         <div class="row" style="align-items:flex-start;">
           <div style="font-size:2.4rem;width:56px;height:56px;display:grid;place-items:center;background:var(--stone-3);border-radius:12px;border:1px solid var(--line);overflow:hidden;">
-            ${c.tokenImg ? `<img src="${c.tokenImg}" style="width:100%;height:100%;object-fit:cover;">` : (c.tokenEmoji || '❓')}
+            ${c.tokenImg ? `<img src="${c.tokenImg}" style="width:100%;height:100%;object-fit:cover;">` : iconHtml(c.tokenEmoji || '❓')}
           </div>
           <div class="grow">
             <b>${escapeHtml(c.name)}</b><br>

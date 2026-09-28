@@ -28,7 +28,8 @@
         <div class="center">
           <div id="profile-avatar" style="font-size:4rem;line-height:1;filter:drop-shadow(0 0 16px rgba(255,154,60,.4));">🧙</div>
           <h2 id="profile-name" class="mt1" style="margin-bottom:.1em;">Adventurer</h2>
-          <span class="badge gold" data-i18n="p_role_pl">Adventurer</span>
+          <span class="badge gold" id="profile-title" data-i18n="t_adventurer">Adventurer</span>
+          <p class="dim" id="profile-bio" style="font-size:.85rem;font-style:italic;margin:.6rem 1rem 0;min-height:1em;"></p>
           <p class="dim mt1" style="font-size:.8rem;" id="profile-since"></p>
         </div>
         <hr style="border-color:var(--line-soft);">
@@ -41,6 +42,7 @@
         </div>
         <hr style="border-color:var(--line-soft);">
         <button class="btn btn-sm btn-ghost" id="change-avatar" data-i18n="a_avatar">Change avatar</button>
+        <button class="btn btn-sm btn-ghost" id="edit-profile" data-i18n="a_edit_profile">Edit bio & title</button>
         <button class="btn btn-sm btn-danger" id="logout" data-i18n="a_logout">Log out</button>
       </div>
 

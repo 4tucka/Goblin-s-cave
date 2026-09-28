@@ -1,5 +1,7 @@
 /* mapcanvas.js — shared grid math + interactive map canvas for builder & VTT */
 
+const isSvgIcon = v => typeof v === 'string' && v.indexOf('assets/icons/') === 0;
+
 
 /* ---------------- grid math ---------------- */
 const Grid = {
@@ -434,12 +436,16 @@ class MapCanvas {
       ctx.strokeStyle = t.owner === 'dm' ? 'rgba(224,91,75,.9)' : 'rgba(143,196,106,.9)';
       ctx.lineWidth = 2.5 / this.view.scale;
       ctx.stroke();
+      const iconImg = (!t.img && isSvgIcon(t.icon)) ? this.getImage(t.icon) : null;
       if (t.img && this.getImage(t.img)) {
         const ti = this.getImage(t.img);
         if (ti.complete && ti.naturalWidth) {
           ctx.save(); ctx.beginPath(); ctx.arc(0, 0, rad, 0, Math.PI * 2); ctx.clip();
           ctx.drawImage(ti, -rad, -rad, rad * 2, rad * 2); ctx.restore();
         }
+      } else if (iconImg) {
+        const sz = rad * 1.55;
+        ctx.drawImage(iconImg, -sz / 2, -sz / 2, sz, sz);
       } else {
         ctx.font = `${rad * 1.15}px serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';

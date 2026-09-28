@@ -64,14 +64,15 @@ $('#ce-slots').innerHTML = Array.from({ length: 9 }, (_, i) =>
   `<label class="center" style="font-size:.75rem;">${i + 1}<br>
    <input type="number" id="slot-${i + 1}" min="0" max="8" value="0" style="width:52px;"></label>`).join('');
 
-let chEmoji = '🧝', chImg = null;
+let chEmoji = 'assets/icons/archer.svg', chImg = null;
 $('#ce-emojis').innerHTML = TOKEN_EMOJIS.map((e, i) =>
-  `<span data-e="${e}" class="${i === 0 ? 'active' : ''}">${e}</span>`).join('');
+  `<span data-e="${e}" class="${i === 0 ? 'active' : ''}">${iconHtml(e)}</span>`).join('');
 $$('#ce-emojis span').forEach(s => s.addEventListener('click', () => {
   chEmoji = s.dataset.e; chImg = null;
   $$('#ce-emojis span').forEach(x => x.classList.toggle('active', x === s));
-  $('#ce-portrait').textContent = chEmoji;
+  $('#ce-portrait').innerHTML = iconHtml(chEmoji);
 }));
+$('#ce-portrait').innerHTML = iconHtml(chEmoji);
 $('#ce-img').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   try {
