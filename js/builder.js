@@ -313,7 +313,7 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
       case 'labelAt': {
         const text = prompt('Label text:', 'The Crypt');
         if (!text) return;
-        state.labels.push({ id: uid(), text, x: p.x, y: p.y, size: 0.5, color: '#ff9d8d' });
+        state.labels.push({ id: uid(), text, x: p.x, y: p.y, size: 0.5, color: null });  /* null = follow theme accent */
         commit(); mc.render(); break;
       }
       case 'selectToken':

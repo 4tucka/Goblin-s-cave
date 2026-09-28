@@ -12,6 +12,52 @@ const TERRAIN_SWATCHES = [
   { name: 'Wall',    c: 'rgba(40,36,32,.85)' },
 ];
 
+/* ============================================================
+   Cave palettes & font pairings (user-selectable look)
+============================================================ */
+const THEMES = [
+  { id: 'blood',  icon: '🩸', name: 'Blood',  cols: ['#ff3b30', '#5c2027', '#0d0506'] },
+  { id: 'poison', icon: '☠️', name: 'Poison', cols: ['#38e06a', '#2c5c38', '#060d07'] },
+  { id: 'arcane', icon: '🔮', name: 'Arcane', cols: ['#a24bff', '#4a2a7a', '#0a0512'] },
+  { id: 'frost',  icon: '❄️', name: 'Frost',  cols: ['#3ba8ff', '#275a7c', '#050a10'] },
+  { id: 'abyss',  icon: '🌊', name: 'Abyss',  cols: ['#18e0b8', '#1f6b57', '#04100e'] },
+];
+const FONT_PAIRS = [
+  { id: 'gothic', name: 'Gothic Tale',   sample: 'Grenze Gotisch', note: 'blackletter + book serif' },
+  { id: 'royal',  name: 'Royal Court',   sample: 'Marcellus',      note: 'elegant classical' },
+  { id: 'rune',   name: 'Runestone',     sample: 'Pirata One',     note: 'heavy medieval' },
+  { id: 'modern', name: 'Modern Table',  sample: 'Oswald',         note: 'clean & contemporary' },
+];
+function getTheme() { return localStorage.getItem('gc_theme') || 'blood'; }
+function getFont() { return localStorage.getItem('gc_font') || 'gothic'; }
+function setTheme(id) {
+  if (id === 'blood') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', id);
+  localStorage.setItem('gc_theme', id);
+  syncCanvasAccent();
+  if (window.Embers && Embers.refresh) Embers.refresh();
+  if (window.Bus) Bus.emit('theme', id);
+}
+function setFont(id) {
+  if (id === 'gothic') document.documentElement.removeAttribute('data-font');
+  else document.documentElement.setAttribute('data-font', id);
+  localStorage.setItem('gc_font', id);
+  syncCanvasAccent();
+  if (window.Bus) Bus.emit('font', id);
+}
+/* cached accent colors for canvas layers (map editor, VTT) */
+let _accentCache = null;
+function canvasAccent() {
+  if (_accentCache) return _accentCache;
+  const cs = getComputedStyle(document.documentElement);
+  const rgb = (cs.getPropertyValue('--torch-rgb') || '255,59,48').trim();
+  const rgb2 = (cs.getPropertyValue('--torch2-rgb') || '255,157,141').trim();
+  const disp = (cs.getPropertyValue('--font-display') || 'Georgia, serif').trim();
+  return _accentCache = { rgb, rgb2, disp };
+}
+function syncCanvasAccent() { _accentCache = null; }
+setTheme(getTheme()); setFont(getFont());   /* apply persisted choice early */
+
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
@@ -128,6 +174,7 @@ function renderHeader(active = '') {
       ${u && !u.guest ? '<a href="account.html" data-nav="account" data-i18n="nav_account">My Account</a>' : ''}
     </nav>
     <div class="spacer"></div>
+    <button id="theme-btn" title="Theme & fonts" aria-label="Theme and fonts">🎨</button>
     <select id="lang-sel" style="width:auto;font-size:.82rem;" title="Language / Idioma / Língua / Langue / Sprache">
       ${Object.entries(I18n.LANGS).map(([k, v]) => `<option value="${k}" ${I18n.getLang() === k ? 'selected' : ''}>${v}</option>`).join('')}
     </select>
@@ -151,6 +198,57 @@ function renderHeader(active = '') {
     if (u.guest) location.href = 'index.html#auth';
     else location.href = 'account.html';
   });
+
+  /* -------- theme & font picker -------- */
+  const tbtn = $('#theme-btn', header);
+  if (tbtn) {
+    tbtn.addEventListener('click', e => { e.stopPropagation(); toggleThemePop(); });
+    document.addEventListener('click', e => {
+      const pop = $('#theme-pop');
+      if (pop && !pop.contains(e.target)) pop.remove();
+    });
+  }
+}
+
+function themePopHtml() {
+  const t = getTheme(), f = getFont();
+  return `
+    <h4>🎨 Cave colors</h4>
+    <div class="swatch-row">
+      ${THEMES.map(th => `
+        <button class="tswatch ${th.id === t ? 'active' : ''}" data-theme-id="${th.id}" title="${th.name}">
+          <span class="dot" style="background: radial-gradient(circle at 35% 30%, ${th.cols[0]}, ${th.cols[1]} 55%, ${th.cols[2]});"></span>
+          <span class="nm">${th.icon} ${th.name}</span>
+        </button>`).join('')}
+    </div>
+    <h4>✒️ Fonts</h4>
+    <div class="font-row">
+      ${FONT_PAIRS.map(fp => `
+        <button class="fswatch ${fp.id === f ? 'active' : ''}" data-font-id="${fp.id}">
+          <span class="aa" style="font-family:'${fp.sample}', Georgia, serif;">Goblin's Cave</span>
+          <span class="nm">${fp.name} · ${fp.note}</span>
+        </button>`).join('')}
+    </div>
+    <button class="btn btn-sm btn-ghost reset" id="theme-reset">↺ Back to Blood &amp; Gothic Tale</button>`;
+}
+
+function toggleThemePop() {
+  const existing = $('#theme-pop');
+  if (existing) { existing.remove(); return; }
+  const pop = document.createElement('div');
+  pop.className = 'theme-pop';
+  pop.id = 'theme-pop';
+  pop.innerHTML = themePopHtml();
+  pop.addEventListener('click', e => e.stopPropagation());
+  pop.addEventListener('click', e => {
+    const t = e.target.closest('[data-theme-id]');
+    const f = e.target.closest('[data-font-id]');
+    if (t) setTheme(t.dataset.themeId);
+    if (f) setFont(f.dataset.fontId);
+    if (e.target.closest('#theme-reset')) { setTheme('blood'); setFont('gothic'); }
+    if (t || f || e.target.closest('#theme-reset')) pop.innerHTML = themePopHtml();
+  });
+  document.body.appendChild(pop);
 }
 
 /* footer */

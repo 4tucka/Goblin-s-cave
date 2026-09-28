@@ -472,14 +472,14 @@ class MapCanvas {
       ctx.translate(x, y);
       if (sel) {
         ctx.beginPath(); ctx.arc(0, 0, (p.scale || 1) * cs * 0.55, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,59,48,.9)'; ctx.lineWidth = 2 / this.view.scale; ctx.stroke();
+        ctx.strokeStyle = `rgba(${canvasAccent().rgb},.9)`; ctx.lineWidth = 2 / this.view.scale; ctx.stroke();
       }
       ctx.font = `${(p.scale || 1) * cs * 0.9}px serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(p.icon || '📦', 0, 0);
       if (p.name) {
         ctx.font = `${Math.max(9, cs * 0.2)}px "Segoe UI", sans-serif`;
-        ctx.fillStyle = 'rgba(255,157,141,.85)';
+        ctx.fillStyle = `rgba(${canvasAccent().rgb2},.85)`;
         ctx.fillText(p.name, 0, (p.scale || 1) * cs * 0.55);
       }
       ctx.restore();
@@ -494,7 +494,7 @@ class MapCanvas {
       ctx.strokeStyle = '#170a0b';
       ctx.lineWidth = (wl.w || 0.2) * cs;
       ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,59,48,.5)';
+      ctx.strokeStyle = `rgba(${canvasAccent().rgb},.5)`;
       ctx.lineWidth = 1.5 / this.view.scale;
       ctx.stroke();
       if (d.selectedWallId === wl.id) {
@@ -508,12 +508,12 @@ class MapCanvas {
 
     // labels
     for (const lb of d.labels || []) {
-      ctx.font = `600 ${cs * (lb.size || 0.5)}px "Cinzel", Georgia, serif`;
+      ctx.font = `600 ${cs * (lb.size || 0.5)}px ${canvasAccent().disp}`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.lineWidth = 3 / this.view.scale;
       ctx.strokeStyle = 'rgba(0,0,0,.75)';
       ctx.strokeText(lb.text, lb.x * cs, lb.y * cs);
-      ctx.fillStyle = lb.color || '#ff9d8d';
+      ctx.fillStyle = lb.color || `rgb(${canvasAccent().rgb2})`;
       ctx.fillText(lb.text, lb.x * cs, lb.y * cs);
     }
 
@@ -523,7 +523,7 @@ class MapCanvas {
         ctx.beginPath();
         ctx.moveTo(this.preview.x1 * cs, this.preview.y1 * cs);
         ctx.lineTo(this.preview.x2 * cs, this.preview.y2 * cs);
-        ctx.strokeStyle = 'rgba(255,157,141,.85)';
+        ctx.strokeStyle = `rgba(${canvasAccent().rgb2},.85)`;
         ctx.lineWidth = 0.2 * cs; ctx.lineCap = 'round';
         ctx.stroke();
       }
@@ -533,7 +533,7 @@ class MapCanvas {
         const r0 = Math.min(a.row, b.row), r1 = Math.max(a.row, b.row);
         for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
           Grid.path(ctx, d.grid, cs, c, r);
-          ctx.fillStyle = 'rgba(255,59,48,.22)';
+          ctx.fillStyle = `rgba(${canvasAccent().rgb},.22)`;
           ctx.fill();
         }
       }

@@ -1,6 +1,17 @@
 /* embers.js — floating ember particle backdrop */
 const Embers = (() => {
+  let baseHue = null;
+  function readHue() {
+    try {
+      const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ember-hue'));
+      if (!isNaN(v)) baseHue = v;
+    } catch {}
+    if (baseHue == null) baseHue = 352;
+  }
+  function refresh() { readHue(); }
+
   function init(canvas) {
+    readHue();
     const ctx = canvas.getContext('2d');
     let W, H, parts = [];
     function resize() {
@@ -17,7 +28,7 @@ const Embers = (() => {
         vy: 0.25 + Math.random() * 0.75,
         vx: (Math.random() - 0.5) * 0.35,
         life: 0.6 + Math.random() * 0.4,
-        hue: (352 + Math.random() * 22) % 360,
+        hue: (baseHue + Math.random() * 22) % 360,
         wob: Math.random() * Math.PI * 2,
       };
     }
@@ -35,7 +46,7 @@ const Embers = (() => {
         const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
         g.addColorStop(0, `hsla(${p.hue}, 100%, 66%, ${a})`);
         g.addColorStop(0.4, `hsla(${p.hue}, 100%, 55%, ${a * 0.45})`);
-        g.addColorStop(1, 'hsla(20,100%,50%,0)');
+        g.addColorStop(1, `hsla(${p.hue},100%,50%,0)`);
         ctx.fillStyle = g;
         ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
         ctx.fill();
@@ -46,5 +57,5 @@ const Embers = (() => {
     resize();
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(tick);
   }
-  return { init };
+  return { init, refresh };
 })();

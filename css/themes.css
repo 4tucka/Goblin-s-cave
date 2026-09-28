@@ -1,0 +1,118 @@
+/* ============================================================
+   GOBLIN'S CAVE — selectable cave palettes & font pairings.
+   Blood (default) lives in styles.css :root; the others here.
+   Applied via data-theme / data-font on <html>.
+   ============================================================ */
+
+/* ☠️ POISON — the venom-lit grotto */
+html[data-theme="poison"] {
+  --bg: #060d07; --bg-2: #0a1509;
+  --stone: #0f1d12; --stone-2: #14271a; --stone-3: #1a3322;
+  --line: #2c5c38; --line-soft: #1d4028;
+  --ink: #d9f2dd; --ink-dim: #9cc9a4; --ink-faint: #61936d;
+  --torch: #38e06a; --torch-2: #9dffb0; --ember: #22d15a; --gold: #c8ff5e;
+  --torch-rgb: 56,224,106; --torch2-rgb: 157,255,176; --ember-rgb: 34,209,90; --gold-rgb: 200,255,94;
+  --bg-rgb: 6,13,7; --bg2-rgb: 10,21,9; --stone-rgb: 15,29,18; --stone2-rgb: 20,39,26; --stone3-rgb: 26,51,34;
+  --line-rgb: 44,92,56;
+  --well: #071209; --pit: #040b06; --torch-3: #d6ffd9; --line-hi: #3a8352;
+  --pri-a: #38e06a; --pri-b: #0f7a34; --pri-edge: #8affab;
+  --ember-hue: 135;
+}
+
+/* 🔮 ARCANE — the violet sanctum */
+html[data-theme="arcane"] {
+  --bg: #0a0512; --bg-2: #120821;
+  --stone: #170d2b; --stone-2: #1f123a; --stone-3: #291949;
+  --line: #4a2a7a; --line-soft: #341e57;
+  --ink: #eadcf2; --ink-dim: #b69cc9; --ink-faint: #83699b;
+  --torch: #a24bff; --torch-2: #d3a9ff; --ember: #8f18ff; --gold: #e39bff;
+  --torch-rgb: 162,75,255; --torch2-rgb: 211,169,255; --ember-rgb: 143,24,255; --gold-rgb: 227,155,255;
+  --bg-rgb: 10,5,18; --bg2-rgb: 18,8,33; --stone-rgb: 23,13,43; --stone2-rgb: 31,18,58; --stone3-rgb: 41,25,73;
+  --line-rgb: 74,42,122;
+  --well: #0d0716; --pit: #070310; --torch-3: #ecd9ff; --line-hi: #6a3aa8;
+  --pri-a: #a24bff; --pri-b: #4d10a0; --pri-edge: #c99aff;
+  --ember-hue: 275;
+}
+
+/* ❄️ FROST — the glacier vault */
+html[data-theme="frost"] {
+  --bg: #050a10; --bg-2: #081220;
+  --stone: #0d1a2b; --stone-2: #12233a; --stone-3: #193049;
+  --line: #275a7c; --line-soft: #1c415b;
+  --ink: #dceaf2; --ink-dim: #9cb8c9; --ink-faint: #648499;
+  --torch: #3ba8ff; --torch-2: #9dd6ff; --ember: #18c4ff; --gold: #6fe7ff;
+  --torch-rgb: 59,168,255; --torch2-rgb: 157,214,255; --ember-rgb: 24,196,255; --gold-rgb: 111,231,255;
+  --bg-rgb: 5,10,16; --bg2-rgb: 8,18,32; --stone-rgb: 13,26,43; --stone2-rgb: 18,35,58; --stone3-rgb: 25,48,73;
+  --line-rgb: 39,90,124;
+  --well: #071019; --pit: #040a12; --torch-3: #d6ecff; --line-hi: #3a6a83;
+  --pri-a: #3ba8ff; --pri-b: #0f4a8f; --pri-edge: #8fd2ff;
+  --ember-hue: 200;
+}
+
+/* 🌊 ABYSS — the drowned treasury */
+html[data-theme="abyss"] {
+  --bg: #04100e; --bg-2: #071a17;
+  --stone: #0c241f; --stone-2: #113029; --stone-3: #173d34;
+  --line: #1f6b57; --line-soft: #174d3f;
+  --ink: #dcf2ea; --ink-dim: #9cc9bb; --ink-faint: #649386;
+  --torch: #18e0b8; --torch-2: #8fffe4; --ember: #0fffc8; --gold: #ffd75e;
+  --torch-rgb: 24,224,184; --torch2-rgb: 143,255,228; --ember-rgb: 15,255,200; --gold-rgb: 255,215,94;
+  --bg-rgb: 4,16,14; --bg2-rgb: 7,26,23; --stone-rgb: 12,36,31; --stone2-rgb: 17,48,41; --stone3-rgb: 23,61,52;
+  --line-rgb: 31,107,87;
+  --well: #061512; --pit: #030d0b; --torch-3: #d0ffef; --line-hi: #2a836b;
+  --pri-a: #18e0b8; --pri-b: #0a6e58; --pri-edge: #8fffe4;
+  --ember-hue: 165;
+}
+
+/* ============================================================
+   Font pairings (applied via data-font on <html>)
+   gothic = default, declared in styles.css :root
+   ============================================================ */
+html[data-font="royal"] {
+  --font-display: "Marcellus", "Palatino Linotype", Georgia, serif;
+  --font-fantasy: "Marcellus", "Palatino Linotype", Georgia, serif;
+  --font-body: "Spectral", "Palatino Linotype", Georgia, serif;
+}
+html[data-font="rune"] {
+  --font-display: "Pirata One", "Palatino Linotype", Georgia, serif;
+  --font-fantasy: "Pirata One", "Palatino Linotype", Georgia, serif;
+  --font-body: "Vollkorn", "Palatino Linotype", Georgia, serif;
+}
+html[data-font="modern"] {
+  --font-display: "Oswald", "Segoe UI", system-ui, sans-serif;
+  --font-fantasy: "Oswald", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+/* keep the wizard numerals tidy on ultra-decorative displays */
+html[data-font="rune"] .wizard-steps li .n { font-family: "Segoe UI", system-ui, sans-serif; }
+
+/* ============================================================
+   Theme & font picker (header popover)
+   ============================================================ */
+#theme-btn { background: var(--stone-2); border: 1px solid var(--line-soft); color: var(--ink-dim);
+  border-radius: 999px; padding: .35rem .6rem; font-size: 1rem; cursor: pointer; line-height: 1; }
+#theme-btn:hover { border-color: var(--torch); color: var(--ink); }
+.theme-pop { position: fixed; top: 58px; right: clamp(.6rem, 2vw, 1.5rem); z-index: 120;
+  width: min(360px, calc(100vw - 1.2rem)); background: linear-gradient(180deg, var(--stone-2), var(--bg-2));
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow), var(--glow);
+  padding: .9rem; }
+.theme-pop h4 { margin: .2rem 0 .5rem; font-size: .95rem; color: var(--torch-2); }
+.theme-pop .swatch-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; margin-bottom: .9rem; }
+.theme-pop .tswatch { border: 2px solid var(--line-soft); border-radius: 10px; cursor: pointer;
+  background: var(--stone); padding: .35rem .2rem; display: grid; justify-items: center; gap: .3rem; color: var(--ink-dim); }
+.theme-pop .tswatch .dot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(0,0,0,.5); }
+.theme-pop .tswatch .nm { font-size: .68rem; letter-spacing: .03em; }
+.theme-pop .tswatch:hover { border-color: var(--line-hi); color: var(--ink); }
+.theme-pop .tswatch.active { border-color: var(--torch); color: var(--torch-2); box-shadow: var(--glow); }
+.theme-pop .font-row { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
+.theme-pop .fswatch { border: 2px solid var(--line-soft); border-radius: 10px; cursor: pointer;
+  background: var(--stone); padding: .45rem .55rem; color: var(--ink-dim); text-align: left; }
+.theme-pop .fswatch .aa { font-size: 1.25rem; color: var(--ink); line-height: 1.1; }
+.theme-pop .fswatch .nm { font-size: .7rem; margin-top: .15rem; display: block; }
+.theme-pop .fswatch:hover { border-color: var(--line-hi); }
+.theme-pop .fswatch.active { border-color: var(--torch); color: var(--torch-2); box-shadow: var(--glow); }
+.theme-pop .reset { margin-top: .7rem; width: 100%; }
+
+/* code-ish things follow the mono face */
+.room-code, code { font-family: var(--font-mono); }
+.room-code { letter-spacing: .28em; }
