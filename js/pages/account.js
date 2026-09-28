@@ -19,36 +19,18 @@ function boot() {
 
   $('#logout').addEventListener('click', () => { Auth.logout(); location.href = 'index.html'; });
 
-  /* ---------- avatar ---------- */
-  $('#change-avatar').addEventListener('click', () => {
-    const rec = Store.findUser(u.username);
-    const ov = openModal(`
-      <div class="modal-head"><h3>Choose your face</h3><button class="modal-x">✕</button></div>
-      <div class="avatar-picker">${AVATARS.map(a =>
-        `<span data-av="${a}" class="${rec.avatar === a && !rec.avatarImg ? 'active' : ''}">${iconHtml(a)}</span>`).join('')}</div>
-      <label class="field mt2"><span>…or upload a portrait</span>
-        <input type="file" id="av-file" accept="image/*"></label>
-    `);
-    $$('.avatar-picker span', ov).forEach(s => s.addEventListener('click', () => {
-      Auth.updateProfile({ avatar: s.dataset.av, avatarImg: null });
-      closeModal(); renderProfile(); toast(I18n.t('a_avatar_ok'), 'ok');
-    }));
-    $('#av-file', ov).addEventListener('change', async e => {
-      const f = e.target.files[0]; if (!f) return;
-      try {
-        const data = await fileToScaledDataURL(f, 240);
-        Auth.updateProfile({ avatarImg: data });
-        closeModal(); renderProfile(); toast(I18n.t('a_portrait_ok'), 'ok');
-      } catch { toast(I18n.t('a_imgbad'), 'err'); }
-    });
-  });
-
-  /* ---------- title & bio ---------- */
+  /* ---------- edit profile (avatar + title + bio) ---------- */
   $('#edit-profile').addEventListener('click', () => {
     const rec = Store.findUser(u.username);
     const ov = openModal(`
       <div class="modal-head"><h3>${I18n.t('a_edit_profile')}</h3><button class="modal-x">✕</button></div>
-      <label class="field"><span>${I18n.t('a_title')}</span>
+      <label class="field"><span>${I18n.t('a_avatar')}</span>
+        <div class="avatar-picker">${AVATARS.map(a =>
+          `<span data-av="${a}" class="${rec.avatar === a && !rec.avatarImg ? 'active' : ''}">${iconHtml(a)}</span>`).join('')}</div>
+        <span class="dim" style="font-size:.8rem;">${I18n.t('a_avatar_upload')}</span>
+        <input type="file" id="av-file" accept="image/*">
+      </label>
+      <label class="field mt1"><span>${I18n.t('a_title')}</span>
         <div class="title-grid">${TITLES.map(t =>
           `<div class="tile${t.id === (rec.title || 'adventurer') ? ' active' : ''}" data-t="${t.id}">${iconHtml(t.icon)}<span>${escapeHtml(I18n.t(t.key))}</span></div>`).join('')}</div>
       </label>
@@ -59,6 +41,20 @@ function boot() {
         <button class="btn btn-gold" id="save-profile">${I18n.t('a_save_profile')}</button>
       </div>
     `);
+    $$('.avatar-picker span', ov).forEach(s => s.addEventListener('click', () => {
+      Auth.updateProfile({ avatar: s.dataset.av, avatarImg: null });
+      $$('.avatar-picker span', ov).forEach(x => x.classList.toggle('active', x === s));
+      renderProfile(); toast(I18n.t('a_avatar_ok'), 'ok');
+    }));
+    $('#av-file', ov).addEventListener('change', async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        const data = await fileToScaledDataURL(f, 240);
+        Auth.updateProfile({ avatarImg: data });
+        $$('.avatar-picker span', ov).forEach(x => x.classList.remove('active'));
+        renderProfile(); toast(I18n.t('a_portrait_ok'), 'ok');
+      } catch { toast(I18n.t('a_imgbad'), 'err'); }
+    });
     let sel = rec.title || 'adventurer';
     $$('.title-grid .tile', ov).forEach(tl => tl.addEventListener('click', () => {
       sel = tl.dataset.t;
