@@ -22,8 +22,8 @@ const draft = {
   terrain: {},
   fog: new Set(),
   npcs: [
-    { id: uid(), name: 'Goblin Scout', type: 'Goblin', hp: 7, maxHp: 7, ac: 13, icon: '👺', atk: 'Scimitar +4 — 1d6+2 slashing', stance: 'hostile' },
-    { id: uid(), name: 'Cave Wolf', type: 'Wolf', hp: 11, maxHp: 11, ac: 13, icon: '🐺', atk: 'Bite +4 — 2d4+2 piercing', stance: 'hostile' },
+    { id: uid(), name: 'Goblin Scout', type: 'Goblin', hp: 7, maxHp: 7, ac: 13, icon: 'assets/icons/goblin.svg', atk: 'Scimitar +4 — 1d6+2 slashing', stance: 'hostile' },
+    { id: uid(), name: 'Cave Wolf', type: 'Wolf', hp: 11, maxHp: 11, ac: 13, icon: 'assets/icons/wolf.svg', atk: 'Bite +4 — 2d4+2 piercing', stance: 'hostile' },
   ],
   tokens: [],
   audio: { kind: 'synth', id: 'cave', name: '💧 Cave Drips', url: '' },
@@ -174,6 +174,23 @@ $('#open-map-editor').addEventListener('click', e => {
     draft.labels = o.labels || [];
   } catch {}
   localStorage.removeItem('gc_builder_draft');
+})();
+
+/* quick-start adventure templates (?tpl=) — pre-forge the whole room and jump to staging */
+(function applyAdventureTemplate() {
+  const id = new URLSearchParams(location.search).get('tpl');
+  if (!id || typeof ADVENTURES === 'undefined' || !ADVENTURES[id]) return;
+  const adv = ADVENTURES[id];
+  const t = adv.build();
+  draft.name = t.name;
+  draft.map = t.map; draft.terrain = t.terrain; draft.fog = new Set(t.fog);
+  draft.npcs = t.npcs; draft.tokens = t.tokens; draft.props = t.props;
+  draft.walls = t.walls; draft.labels = t.labels;
+  draft.audio = t.audio;
+  $('#r-name').value = draft.name;
+  $('#a-current').textContent = draft.audio.name;
+  draft._tplStep = 5;
+  toast(I18n.t('adv_loaded', { name: escapeHtml(I18n.t(adv.nameKey)) }), 'ok');
 })();
 
 /* ============================================================
@@ -472,5 +489,6 @@ $('#lobby-chat-send').addEventListener('click', sendLobbyChat);
 $('#lobby-chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendLobbyChat(); });
 
 /* init */
-goStep(draft._restoreStep || 1);
+goStep(draft._tplStep || draft._restoreStep || 1);
 delete draft._restoreStep;
+delete draft._tplStep;
