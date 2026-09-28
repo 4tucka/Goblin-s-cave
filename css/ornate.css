@@ -1,0 +1,252 @@
+/* ============================================================
+   ORNATE LAYER — advanced design pass for Goblin's Cave.
+   Loaded after themes.css; driven entirely by theme variables
+   so every cave palette inherits the treatment.
+   ============================================================ */
+
+/* ---------- ambient depth: vignette + forge glow ---------- */
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(120% 90% at 50% 108%, rgba(var(--ember-rgb),.10), transparent 55%),
+    radial-gradient(140% 120% at 50% 50%, transparent 58%, rgba(0,0,0,.42) 100%);
+}
+
+/* ---------- typography: molten-metal headings ---------- */
+h1, h2 { font-weight: 700; }
+h2 {
+  background: linear-gradient(180deg, var(--torch-3), var(--torch-2) 55%, var(--torch));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(var(--torch-rgb),.28));
+}
+h3 { letter-spacing: .015em; }
+
+/* ornate centred section headings — flanked by fading filaments */
+h2.center { display: flex; align-items: center; justify-content: center; gap: 1.1rem; }
+h2.center::before, h2.center::after {
+  content: ""; height: 1px; width: clamp(34px, 9vw, 130px); flex: 0 0 auto;
+  background: linear-gradient(90deg, transparent, var(--line-hi) 45%, rgba(var(--torch-rgb),.75));
+}
+h2.center::after { transform: scaleX(-1); }
+
+/* panel titles get a filament running to the edge */
+.panel-title::after {
+  content: ""; flex: 1; height: 1px; margin-left: .4rem;
+  background: linear-gradient(90deg, rgba(var(--torch-rgb),.55), var(--line-soft) 60%, transparent);
+}
+
+/* ---------- panels & cards: carved stone ---------- */
+.panel {
+  position: relative;
+  border-color: rgba(var(--line-rgb),.75);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.045);
+}
+.panel::before { /* top hairline catching torchlight */
+  content: ""; position: absolute; left: 10%; right: 10%; top: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--torch-rgb),.65), transparent);
+  pointer-events: none;
+}
+.panel.torch-lit { animation: breathe 5.5s ease-in-out infinite; }
+@keyframes breathe {
+  0%, 100% { box-shadow: var(--shadow), inset 0 0 60px rgba(var(--ember-rgb),.05); }
+  50%      { box-shadow: var(--shadow), inset 0 0 85px rgba(var(--ember-rgb),.10), 0 0 34px rgba(var(--ember-rgb),.09); }
+}
+
+.card {
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  transition: transform .18s ease, border-color .2s ease, box-shadow .25s ease;
+}
+.card::before {
+  content: ""; position: absolute; left: 12%; right: 12%; top: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--torch-rgb),.4), transparent);
+  opacity: 0; transition: opacity .25s ease; pointer-events: none;
+}
+.card:hover::before, .card.clickable:hover::before { opacity: 1; }
+.card.clickable:hover {
+  transform: translateY(-3px);
+  border-color: rgba(var(--torch-rgb),.6);
+  box-shadow: 0 14px 34px rgba(0,0,0,.5), 0 0 26px rgba(var(--torch-rgb),.18), inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* ---------- buttons: forged steel + shine sweep ---------- */
+.btn {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -8px 14px rgba(0,0,0,.22), 0 3px 10px rgba(0,0,0,.35);
+  transition: transform .13s ease, box-shadow .22s ease, border-color .2s ease, color .2s ease;
+}
+.btn-primary, .btn-gold, .btn-danger, .btn-green { position: relative; overflow: hidden; }
+.btn-primary::after, .btn-gold::after {
+  content: ""; position: absolute; top: -4px; bottom: -4px; left: -90%; width: 44%;
+  background: linear-gradient(100deg, transparent 15%, rgba(255,255,255,.38) 50%, transparent 85%);
+  transform: skewX(-22deg); transition: left .55s ease; pointer-events: none;
+}
+.btn-primary:hover::after, .btn-gold:hover::after { left: 135%; }
+.btn-primary { box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -10px 16px rgba(0,0,0,.3), var(--glow); }
+.btn-primary:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 30px rgba(var(--torch-rgb),.55), 0 6px 18px rgba(0,0,0,.4); }
+.btn-lg { letter-spacing: .05em; }
+.btn:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--torch-2); outline-offset: 2px;
+}
+
+.btn-gold {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 62%, #fff), var(--gold) 48%, var(--pri-a));
+  border-color: var(--pri-edge); color: #1c0602; text-shadow: 0 1px 0 rgba(255,255,255,.3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -8px 14px rgba(0,0,0,.2), 0 0 18px rgba(var(--gold-rgb),.3);
+}
+.btn-gold:hover { color: #000; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 28px rgba(var(--gold-rgb),.55), 0 6px 18px rgba(0,0,0,.4); }
+
+/* ---------- forms: wells that ignite on focus ---------- */
+input[type=text], input[type=password], input[type=number], input[type=url], select, textarea {
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
+  transition: border-color .2s ease, box-shadow .25s ease, background-color .2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  background: color-mix(in srgb, var(--well) 82%, var(--torch) 6%);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.45), 0 0 0 3px rgba(var(--torch-rgb),.2), 0 0 18px rgba(var(--torch-rgb),.18);
+}
+::placeholder { color: var(--ink-faint); opacity: .85; font-style: italic; }
+
+/* ---------- header: ember hairline + glowing trail ---------- */
+.site-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent 4%, rgba(var(--torch-rgb),.6) 30%, rgba(var(--gold-rgb),.8) 50%, rgba(var(--torch-rgb),.6) 70%, transparent 96%);
+  pointer-events: none;
+}
+.site-header { position: sticky; }
+.brand {
+  background: linear-gradient(180deg, var(--torch-3), var(--torch-2) 60%, var(--torch));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 12px rgba(var(--torch-rgb),.5));
+}
+.nav-links a { position: relative; transition: color .18s ease, background-color .18s ease; }
+.nav-links a.active::after {
+  content: ""; position: absolute; left: 22%; right: 22%; bottom: 1px; height: 2px; border-radius: 2px;
+  background: var(--torch); box-shadow: 0 0 10px rgba(var(--torch-rgb),.9);
+}
+
+/* ---------- hero: staged entrance, molten title, ken-burns depth ---------- */
+.hero-bg { animation: kenburns 36s ease-in-out infinite alternate; }
+@keyframes kenburns { from { transform: scale(1.02); } to { transform: scale(1.1) translateY(-1.5%); } }
+.hero h1 {
+  background: linear-gradient(175deg, var(--torch-3) 8%, var(--gold) 42%, var(--torch) 78%, var(--pri-b));
+  background-size: 100% 160%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 5px 22px rgba(var(--ember-rgb),.5)) drop-shadow(0 1px 0 rgba(0,0,0,.7));
+  animation: molten 6s ease-in-out infinite alternate;
+}
+@keyframes molten { from { background-position: 0 0; } to { background-position: 0 55%; } }
+.hero .tagline { position: relative; display: inline-block; padding: 0 1.6rem; }
+.hero .tagline::before, .hero .tagline::after {
+  content: "✦"; position: absolute; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: .7em; text-shadow: 0 0 8px rgba(var(--gold-rgb),.8);
+}
+.hero .tagline::before { left: 0; } .hero .tagline::after { right: 0; }
+.hero-inner > * { animation: fadeUp .8s cubic-bezier(.2,.7,.3,1) both; }
+.hero-inner > *:nth-child(1) { animation-delay: .05s; }
+.hero-inner > *:nth-child(2) { animation-delay: .16s; }
+.hero-inner > *:nth-child(3) { animation-delay: .30s; }
+.hero-inner > *:nth-child(4) { animation-delay: .44s; }
+.hero-inner > *:nth-child(5) { animation-delay: .58s; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+.hero-cue {
+  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 3;
+  color: var(--gold); font-size: 1.15rem; opacity: .85; text-decoration: none;
+  text-shadow: 0 0 12px rgba(var(--gold-rgb),.7); animation: cueBob 2.2s ease-in-out infinite;
+}
+@keyframes cueBob { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+/* ---------- scroll reveal ---------- */
+.reveal { opacity: 0; transform: translateY(20px); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.3,1);
+}
+
+/* ---------- wizard rail ---------- */
+@media (min-width: 940px) {
+  .wizard-steps { position: relative; }
+  .wizard-steps::before {
+    content: ""; position: absolute; left: 2rem; right: 2rem; top: 50%; height: 2px; z-index: 0;
+    background: linear-gradient(90deg, var(--line-soft), rgba(var(--torch-rgb),.4), var(--line-soft));
+  }
+  .wizard-steps li { position: relative; z-index: 1; }
+}
+.wizard-steps li.active .n { animation: nodePulse 2s ease-in-out infinite; }
+@keyframes nodePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--torch-rgb),.55); }
+  50%      { box-shadow: 0 0 0 7px rgba(var(--torch-rgb),0); }
+}
+
+/* ---------- modal: grand entrance ---------- */
+.modal {
+  animation: modalPop .3s cubic-bezier(.2,.9,.3,1.2) both;
+  border-color: rgba(var(--line-rgb),.9);
+  box-shadow: 0 34px 90px rgba(0,0,0,.8), 0 0 42px rgba(var(--torch-rgb),.14), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.modal::before {
+  content: ""; display: block; margin: -1.4rem -1.4rem 1rem; height: 2px; border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, transparent, rgba(var(--torch-rgb),.8), rgba(var(--gold-rgb),.9), rgba(var(--torch-rgb),.8), transparent);
+}
+@keyframes modalPop { from { opacity: 0; transform: translateY(14px) scale(.965); } }
+.modal-x { transition: transform .18s ease, color .18s ease; }
+.modal-x:hover { transform: rotate(90deg); }
+
+/* ---------- toasts ---------- */
+.toast { backdrop-filter: blur(6px); box-shadow: 0 10px 30px rgba(0,0,0,.55), 0 0 18px rgba(var(--torch-rgb),.1); }
+
+/* ---------- badges: glass gloss ---------- */
+.badge { box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+
+/* ---------- rows & lists ---------- */
+.player-row { transition: border-color .2s ease, background-color .2s ease, transform .15s ease; }
+.player-row:hover { border-color: rgba(var(--torch-rgb),.45); background: color-mix(in srgb, var(--stone) 88%, var(--torch) 5%); }
+
+/* ---------- table ---------- */
+.table th { color: var(--gold); opacity: .92; }
+.table tr { transition: background-color .15s ease; }
+
+/* ---------- account: reliquary profile ---------- */
+#profile-avatar { animation: ringGlow 4s ease-in-out infinite; border-radius: 18px; }
+@keyframes ringGlow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(var(--torch-rgb),.35)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(var(--torch-rgb),.6)); }
+}
+.room-code { animation: codeGlow 3s ease-in-out infinite; }
+@keyframes codeGlow {
+  0%, 100% { text-shadow: 0 0 14px rgba(var(--gold-rgb),.45); }
+  50%      { text-shadow: 0 0 30px rgba(var(--gold-rgb),.8); }
+}
+
+/* ---------- adventure cards: living covers ---------- */
+.adv-cover img { transition: transform .6s ease, filter .4s ease; }
+.adv-card:hover .adv-cover img { transform: scale(1.08); filter: brightness(.85) sepia(.05); }
+.adv-ico { transition: box-shadow .3s ease, border-color .3s ease; }
+.adv-card:hover .adv-ico { border-color: rgba(var(--torch-rgb),.65); box-shadow: 0 4px 18px rgba(0,0,0,.6), 0 0 22px rgba(var(--torch-rgb),.35); }
+
+/* ---------- dice & initiative flourishes ---------- */
+.die-btn { transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease; }
+.die-btn:hover { transform: translateY(-2px); }
+.init-card { transition: border-color .2s ease, box-shadow .25s ease, transform .15s ease; }
+.init-card.current { animation: breathe 3s ease-in-out infinite; }
+
+/* ---------- chat ---------- */
+.chat-log { box-shadow: inset 0 2px 12px rgba(0,0,0,.45); }
+.chat-msg.roll { box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 14px rgba(var(--torch-rgb),.12); }
+
+/* ---------- footer ---------- */
+.footer { position: relative; }
+.footer::before {
+  content: ""; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--torch-rgb),.5), transparent);
+}
+
+/* ---------- guide ---------- */
+#guide-fab { transition: transform .2s ease, box-shadow .25s ease; }
+#guide-fab:hover { box-shadow: 0 10px 30px rgba(0,0,0,.7), 0 0 34px rgba(var(--torch-rgb),.55); }
+
+/* ---------- accessibility: calm the cave for those who ask ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+  .hero-inner > * { animation: none; }
+}

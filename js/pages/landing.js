@@ -40,6 +40,20 @@ $('#guest-link').addEventListener('click', e => {
   location.reload();
 });
 
+/* scroll reveal — sections ignite as they enter the torchlight */
+(function initReveal() {
+  const targets = Array.from(document.querySelectorAll('main .panel, main .grid, main h2.center'))
+    .filter(el => !el.closest('.hero'));
+  if (!('IntersectionObserver' in window)) { return; }
+  targets.forEach(el => el.classList.add('reveal'));
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }
+  }, { threshold: 0.12 });
+  targets.forEach(el => io.observe(el));
+})();
+
 /* quick-start adventure cards */
 (function renderAdventures() {
   const grid = $('#adv-grid');
