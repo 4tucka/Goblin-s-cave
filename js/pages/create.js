@@ -22,8 +22,8 @@ const draft = {
   terrain: {},
   fog: new Set(),
   npcs: [
-    { id: uid(), name: 'Goblin Scout', type: 'Goblin', hp: 7, maxHp: 7, ac: 13, icon: '👺', atk: 'Scimitar +4 — 1d6+2 slashing' },
-    { id: uid(), name: 'Cave Wolf', type: 'Wolf', hp: 11, maxHp: 11, ac: 13, icon: '🐺', atk: 'Bite +4 — 2d4+2 piercing' },
+    { id: uid(), name: 'Goblin Scout', type: 'Goblin', hp: 7, maxHp: 7, ac: 13, icon: '👺', atk: 'Scimitar +4 — 1d6+2 slashing', stance: 'hostile' },
+    { id: uid(), name: 'Cave Wolf', type: 'Wolf', hp: 11, maxHp: 11, ac: 13, icon: '🐺', atk: 'Bite +4 — 2d4+2 piercing', stance: 'hostile' },
   ],
   tokens: [],
   audio: { kind: 'synth', id: 'cave', name: '💧 Cave Drips', url: '' },
@@ -45,8 +45,8 @@ function goStep(n) {
     li.classList.toggle('done', s < n);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (n === 2) { bootBuilder(); setTimeout(() => bld && bld.fit(), 60); }
-  if (n === 3) renderNpcList();
+  if (n === 2) renderNpcList();
+  if (n === 3) { bootBuilder(); setTimeout(() => bld && bld.fit(), 60); }
   if (n === 4) renderAudioPresets();
   if (n === 5 && roomPosted) enterLobbyView();
 }
@@ -95,9 +95,65 @@ function bootBuilder() {
   bld.setNpcOptions();
 }
 
+/* wizard persistence — so round-trips (character editor, full-screen map editor)
+   never lose the room you're forging */
+function persistWizardDraft() {
+  try {
+    localStorage.setItem('gc_wizard_draft', JSON.stringify({
+      step: currentStep, name: draft.name, password: draft.password, maxPlayers: draft.maxPlayers,
+      map: draft.map, terrain: draft.terrain, fog: [...draft.fog],
+      npcs: draft.npcs, tokens: draft.tokens, props: draft.props, walls: draft.walls, labels: draft.labels,
+      audio: draft.audio,
+    }));
+  } catch {}
+}
+(function restoreWizardDraft() {
+  const raw = localStorage.getItem('gc_wizard_draft');
+  if (!raw) return;
+  try {
+    const o = JSON.parse(raw);
+    draft.name = o.name || ''; draft.password = o.password || '';
+    draft.maxPlayers = clamp(parseInt(o.maxPlayers) || 6, 1, 12);
+    Object.assign(draft.map, o.map || {});
+    draft.terrain = o.terrain || {}; draft.fog = new Set(o.fog || []);
+    if (Array.isArray(o.npcs) && o.npcs.length) draft.npcs = o.npcs;
+    draft.tokens = o.tokens || []; draft.props = o.props || [];
+    draft.walls = o.walls || []; draft.labels = o.labels || [];
+    if (o.audio) draft.audio = o.audio;
+    $('#r-name').value = draft.name; $('#r-pass').value = draft.password;
+    $('#r-max').value = draft.maxPlayers;
+    $('#r-access').value = draft.password ? 'password' : 'open';
+    if (typeof syncAccess === 'function') syncAccess();
+    $('#a-current').textContent = draft.audio.name;
+    draft._restoreStep = clamp(parseInt(o.step) || 1, 1, 4);
+  } catch {}
+  localStorage.removeItem('gc_wizard_draft');
+})();
+
+/* absorb a full character coming back from the character editor as a friendly NPC */
+(function absorbNpcDraft() {
+  const raw = localStorage.getItem('gc_char_draft');
+  if (!raw) return;
+  try {
+    const ch = JSON.parse(raw);
+    if (ch && ch.__npc && ch.name) {
+      addNpc({
+        name: ch.name.slice(0, 40),
+        type: [ch.race, ch.cls].filter(Boolean).join(' ') || 'Custom',
+        hp: ch.maxHp || 10, ac: ch.ac || 10,
+        icon: ch.tokenEmoji || '🎭', img: ch.tokenImg || null,
+        atk: ch.attacks || '', stance: 'friendly',
+      }, true);
+      toast(`🤝 <b>${escapeHtml(ch.name)}</b> was forged as a friendly NPC.`, 'ok');
+    }
+  } catch {}
+  localStorage.removeItem('gc_char_draft');
+})();
+
 /* full-screen editor round-trip */
 $('#open-map-editor').addEventListener('click', e => {
   e.preventDefault();
+  persistWizardDraft();
   localStorage.setItem('gc_builder_draft', JSON.stringify({
     map: draft.map, terrain: draft.terrain, fog: [...draft.fog],
     tokens: draft.tokens, props: draft.props, walls: draft.walls, labels: draft.labels,
@@ -165,18 +221,37 @@ $('#n-add').addEventListener('click', () => addNpc({
   ac: Math.max(1, parseInt($('#n-ac').value) || 10),
   icon: npcIcon,
   atk: $('#n-atk').value.trim(),
+  stance: $('#n-stance').value,
 }));
 $('#n-random').addEventListener('click', () => {
   const names = ['Snagtooth', 'Mugwort', 'Ratch', 'Bogeye', 'Nib', 'Scabbs', 'Grelch', 'Wartfang', 'Dribble', 'Knucks'];
-  addNpc({ name: pick(names) + ' the ' + pick(['Sneaky', 'Hungry', 'Unwashed', 'Bold', 'Nervous', 'Shiny']), type: 'Goblin', ...NPC_DEFAULTS.Goblin, hp: rint(5, 9) });
+  addNpc({ name: pick(names) + ' the ' + pick(['Sneaky', 'Hungry', 'Unwashed', 'Bold', 'Nervous', 'Shiny']), type: 'Goblin', ...NPC_DEFAULTS.Goblin, hp: rint(5, 9), stance: 'hostile' });
 });
 
-function addNpc(n) {
+/* full-character NPC round-trip via the advanced character editor */
+$('#n-charbuilder').addEventListener('click', () => {
+  persistWizardDraft();
+  location.href = 'char-editor.html?return=npc';
+});
+
+const STANCES = ['friendly', 'neutral', 'hostile'];
+const STANCE_META = {
+  friendly: { key: 'st_friendly', cls: 'green', icon: '🤝' },
+  neutral:  { key: 'st_neutral',  cls: 'dim',   icon: '😐' },
+  hostile:  { key: 'st_hostile',  cls: 'red',   icon: '⚔️' },
+};
+function stanceBadge(n) {
+  const m = STANCE_META[n.stance] || STANCE_META.hostile;
+  return `<span class="badge ${m.cls} stance-badge" title="Click to change stance">${m.icon} ${escapeHtml(I18n.t(m.key))}</span>`;
+}
+
+function addNpc(n, quiet = false) {
   n.id = uid(); n.maxHp = n.hp;
+  if (!STANCES.includes(n.stance)) n.stance = 'hostile';
   draft.npcs.push(n);
   renderNpcList(); bld && bld.setNpcOptions();
   $('#n-name').value = '';
-  toast(`<b>${escapeHtml(n.name)}</b> joins the roster. ${n.icon}`, 'ok');
+  if (!quiet) toast(`<b>${escapeHtml(n.name)}</b> joins the roster. ${n.icon}`, 'ok');
 }
 
 $('#n-import').addEventListener('click', () => {
@@ -190,6 +265,7 @@ $('#n-import').addEventListener('click', () => {
         name: String(o.name).slice(0, 40), type: o.type || 'Custom',
         hp: parseInt(o.hp) || 10, ac: parseInt(o.ac) || 10,
         icon: o.icon || '❓', atk: o.atk || '',
+        stance: STANCES.includes(o.stance) ? o.stance : 'hostile',
       });
       n++;
     }
@@ -208,10 +284,16 @@ function renderNpcList() {
     row.innerHTML = `
       <div class="avatar">${n.icon}</div>
       <div class="grow">
-        <div class="name">${escapeHtml(n.name)} <span class="badge dim">${escapeHtml(n.type)}</span></div>
+        <div class="name">${escapeHtml(n.name)} <span class="badge dim">${escapeHtml(n.type)}</span> ${stanceBadge(n)}</div>
         <div class="sub">HP ${n.hp} · AC ${n.ac}${n.atk ? ' · ' + escapeHtml(n.atk) : ''}</div>
       </div>
       <button class="btn btn-sm btn-danger" data-del>✕</button>`;
+    $('.stance-badge', row).style.cursor = 'pointer';
+    $('.stance-badge', row).addEventListener('click', () => {
+      n.stance = STANCES[(STANCES.indexOf(n.stance) + 1) % STANCES.length];
+      draft.tokens.forEach(t => { if (t.npcId === n.id) t.stance = n.stance; });
+      renderNpcList(); if (bld) bld.render();
+    });
     $('[data-del]', row).addEventListener('click', () => {
       draft.npcs = draft.npcs.filter(x => x.id !== n.id);
       draft.tokens = draft.tokens.filter(t => t.npcId !== n.id);
@@ -390,4 +472,5 @@ $('#lobby-chat-send').addEventListener('click', sendLobbyChat);
 $('#lobby-chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendLobbyChat(); });
 
 /* init */
-goStep(1);
+goStep(draft._restoreStep || 1);
+delete draft._restoreStep;

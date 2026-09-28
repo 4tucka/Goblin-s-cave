@@ -46,25 +46,12 @@
       </div>
     </div>
     <div class="row end mt2">
-      <button class="btn btn-primary" data-next="2" data-i18n="next_map">Next: Build the Map →</button>
+      <button class="btn btn-primary" data-next="2" data-i18n="next_npc">Next: Spawn NPCs →</button>
     </div>
   </section>
 
-  <!-- ================= STEP 2 ================= -->
+  <!-- ================= STEP 2 — NPCs first ================= -->
   <section class="panel hidden" data-panel="2">
-    <div class="panel-title row between">
-      <h2 class="mt0" data-i18n="s2_t">🗺️ Advanced Map Builder</h2>
-      <a class="btn btn-sm" href="#" id="open-map-editor">🧰 Open full-screen editor</a>
-    </div>
-    <div id="builder-root"></div>
-    <div class="row between mt2">
-      <button class="btn btn-ghost" data-prev="1" data-i18n="back_b">← Back</button>
-      <button class="btn btn-primary" data-next="3" data-i18n="next_npc">Next: Spawn NPCs →</button>
-    </div>
-  </section>
-
-  <!-- ================= STEP 3 ================= -->
-  <section class="panel hidden" data-panel="3">
     <div class="panel-title"><h2 data-i18n="s3_t">👹 NPC &amp; Monster Spawner</h2></div>
     <div class="grid cols-2">
       <div class="card">
@@ -78,6 +65,12 @@
               <option>Giant Spider</option><option>Ogre</option><option>Cultist</option>
               <option>Kobold</option><option>Orc</option><option>Custom</option>
             </select></label>
+          <label class="field"><span data-i18n="n_stance">Stance</span>
+            <select id="n-stance">
+              <option value="hostile" data-i18n="st_hostile">Hostile ⚔️</option>
+              <option value="neutral" data-i18n="st_neutral">Neutral 😐</option>
+              <option value="friendly" data-i18n="st_friendly">Friendly 🤝</option>
+            </select></label>
           <label class="field"><span>Max HP</span><input type="number" id="n-hp" min="1" value="7"></label>
           <label class="field"><span>AC</span><input type="number" id="n-ac" min="1" value="13"></label>
         </div>
@@ -90,18 +83,35 @@
           <button class="btn btn-primary btn-sm" id="n-add">➕ Add to roster</button>
           <button class="btn btn-sm" id="n-random">🎲 Random goblin</button>
         </div>
+        <div class="row mt1">
+          <button class="btn btn-sm btn-block" id="n-charbuilder" data-i18n="n_charbuilder">🧬 Build a full character as a friendly NPC</button>
+        </div>
         <hr style="border-color:var(--line-soft);">
-        <label class="field"><span>Import stat blocks (JSON array: name, type, hp, ac, icon, atk)</span>
-          <textarea id="n-json" placeholder='[{"name":"Vex the Rat King","type":"Custom","hp":22,"ac":12,"icon":"🐀","atk":"Bite +3 — 1d4+1"}]'></textarea></label>
+        <label class="field"><span>Import stat blocks (JSON array: name, type, hp, ac, icon, atk, stance)</span>
+          <textarea id="n-json" placeholder='[{"name":"Vex the Rat King","type":"Custom","hp":22,"ac":12,"icon":"🐀","atk":"Bite +3 — 1d4+1","stance":"neutral"}]'></textarea></label>
         <button class="btn btn-sm" id="n-import">📥 Import JSON</button>
       </div>
       <div class="card">
         <h3 class="mt0">Roster <span class="badge dim" id="npc-count">0</span></h3>
         <div id="npc-list" class="scrollbox" style="max-height:420px;"></div>
-        <p class="dim mt1" style="font-size:.8rem;">Tip: after adding creatures here, go back to the Map
-        Builder and use 🎯 <b>Place token</b> to put them on the grid.</p>
+        <p class="dim mt1" style="font-size:.8rem;" data-i18n="n_tip">Tip: create your creatures here first — on the
+        next step, the Map Builder&rsquo;s 🎯 <b>Place token</b> tool puts them on the grid. Click a stance badge in the
+        roster to switch a creature between friendly / neutral / hostile.</p>
       </div>
     </div>
+    <div class="row between mt2">
+      <button class="btn btn-ghost" data-prev="1" data-i18n="back_b">← Back</button>
+      <button class="btn btn-primary" data-next="3" data-i18n="next_map">Next: Build the Map →</button>
+    </div>
+  </section>
+
+  <!-- ================= STEP 3 — Map comes after the NPCs ================= -->
+  <section class="panel hidden" data-panel="3">
+    <div class="panel-title row between">
+      <h2 class="mt0" data-i18n="s2_t">🗺️ Advanced Map Builder</h2>
+      <a class="btn btn-sm" href="#" id="open-map-editor">🧰 Open full-screen editor</a>
+    </div>
+    <div id="builder-root"></div>
     <div class="row between mt2">
       <button class="btn btn-ghost" data-prev="2" data-i18n="back_b">← Back</button>
       <button class="btn btn-primary" data-next="4" data-i18n="next_atmo">Next: Atmosphere →</button>

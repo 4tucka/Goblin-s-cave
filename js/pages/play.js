@@ -364,10 +364,13 @@ function boot() {
       h.className = 'mt2'; h.textContent = 'Creatures';
       box.appendChild(h);
       for (const t of npcs) {
+        const st = t.stance === 'friendly' ? '<span class="badge green" title="Friendly">🤝</span>'
+          : t.stance === 'neutral' ? '<span class="badge dim" title="Neutral">😐</span>'
+          : '<span class="badge red" title="Hostile">⚔️</span>';
         const row = document.createElement('div');
         row.className = 'player-row';
         row.innerHTML = `<div class="avatar">${t.icon || '👹'}</div>
-          <div class="grow"><div class="name">${escapeHtml(t.name)}</div>
+          <div class="grow"><div class="name">${escapeHtml(t.name)} ${st}</div>
           <div class="sub">❤️ ${t.hp}/${t.maxHp} · 🛡️ ${t.ac}</div></div>`;
         box.appendChild(row);
       }

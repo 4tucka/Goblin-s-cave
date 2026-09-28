@@ -274,8 +274,8 @@ function initBuilder({ root, state, owner = null, getNpcList = () => [] }) {
   /* ---------- canvas actions ---------- */
   function makeNpcToken(npc, col, row) {
     const hex = state.map.grid === 'hex';
-    return { id: uid(), npcId: npc.id, name: npc.name, icon: npc.icon, img: null, color: '#4a2018',
-      owner: 'dm', hp: npc.maxHp, maxHp: npc.maxHp, ac: npc.ac, atk: npc.atk, size: 1,
+    return { id: uid(), npcId: npc.id, name: npc.name, icon: npc.icon, img: npc.img || null, color: '#4a2018',
+      owner: 'dm', hp: npc.maxHp, maxHp: npc.maxHp, ac: npc.ac, atk: npc.atk, stance: npc.stance || 'hostile', size: 1,
       x: hex ? col : col + 0.5, y: hex ? row : row + 0.5 };
   }
 

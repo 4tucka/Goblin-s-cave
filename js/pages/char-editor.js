@@ -13,6 +13,10 @@ if (returnTo === 'join' && roomCode) {
   $('#ce-back').href = 'join.html?code=' + roomCode;
   $('#ce-back').textContent = '← Back to joining';
 }
+if (returnTo === 'npc') {
+  $('#ce-back').href = 'create.html';
+  $('#ce-back').textContent = '← Back to the room wizard';
+}
 
 const SKILLS = [
   ['acrobatics', 'dex'], ['animal', 'wis'], ['arcana', 'int'], ['athletics', 'str'],
@@ -225,6 +229,12 @@ $('#ce-save').addEventListener('click', () => {
   if (returnTo === 'join') {
     localStorage.setItem('gc_char_draft', JSON.stringify(ch));
     location.href = 'join.html?code=' + roomCode;
+    return;
+  }
+  if (returnTo === 'npc') {
+    ch.__npc = true;
+    localStorage.setItem('gc_char_draft', JSON.stringify(ch));
+    location.href = 'create.html';
     return;
   }
   if (!canVault) {
